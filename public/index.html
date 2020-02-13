@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="bundle.js"></script>
+  <script src="https://cloudflare-ipfs.com/ipfs/QmcQADhGeYvyRm56xoijAM4gs7ZLBu3WfeotTpc7SdUuMa"
+    integrity="sha384-PAg4PvuFYzWY4THGynmPbfqGUb0gekmTzumGoo/yhESiri+rsds0O65AJW3eEHMc" crossorigin="anonymous">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.3.200/pdf.min.js"
+    integrity="sha384-fkzZfI3efygZRAATPJBfjOJbYhI5LO44plA0yO9UQp+ETHH3t4OCwvYVGVwRfasA" crossorigin="anonymous">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+</head>
+
+<body>
+  <input type="file" id="pdf-upload" />
+  <hr />
+  <canvas></canvas>
+  <script>
+    var interval = setInterval(function () {
+      if (window.torus) {
+        clearInterval(interval)
+        torus.login({
+          verifier: 'google'
+        })
+      }
+    }, 100)
+    document.querySelector("#pdf-upload").addEventListener("change", function (e) {
+      var canvasElement = document.querySelector("canvas")
+      var file = e.target.files[0]
+      if (file.type != "application/pdf") {
+        console.error(file.name, "is not a pdf file.")
+        return
+      }
+
+      var fileReader = new FileReader();
+
+      fileReader.onload = function () {
+        var typedarray = new Uint8Array(this.result);
+
+        pdfjsLib.getDocument(typedarray).then(function (pdf) {
+          window.pdf = pdf
+          // you can now use *pdf* here
+          console.log("the pdf has ", pdf.numPages, "page(s).")
+          pdf.getData().then(function (data) {
+            console.log(data.length)
+            var hash = web3.sha3('0x'+Buffer.from(data).toString('hex'))
+            console.log('hash', hash)
+            web3.eth.sign(web3.eth.accounts[0], hash, console.log)
+          })
+          pdf.getPage(1).then(function (page) {
+            var viewport = page.getViewport(2.0);
+            var canvas = document.querySelector("canvas")
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            page.render({
+              canvasContext: canvas.getContext('2d'),
+              viewport: viewport
+            });
+          });
+
+        });
+      };
+
+      fileReader.readAsArrayBuffer(file);
+    })
+  </script>
+</body>
+
+</html>
