@@ -90,8 +90,8 @@
 </template>
 
 <script>
-import pdf from 'pdfvuer'
-import FileUpload from 'vue-upload-component'
+// import pdf from 'pdfvuer'
+// import FileUpload from 'vue-upload-component'
 import pdf2base64 from 'pdf-to-base64'
 import sha256 from 'js-sha256'
 
@@ -121,8 +121,8 @@ export default {
     }
   },
   components: {
-    pdf,
-    FileUpload
+    // pdf,
+    // FileUpload
   },
   methods: {
     /**
