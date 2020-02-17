@@ -51,7 +51,7 @@
       </ul>
 
       <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active">
-    		<h3>Drop files to upload</h3>
+        <h3>Drop files to upload</h3>
       </div>
 
       <div class="example-btn">
@@ -95,16 +95,16 @@ export default {
     pdf2base64(link)
     .then(
         (response) => {
-            console.log("base64: " + response); //cGF0aC90by9maWxlLmpwZw==
-    var hash = sha256.create();
-   hash.update(response);
+            console.log("base64: " + response) //cGF0aC90by9maWxlLmpwZw==
+    var hash = sha256.create()
+   hash.update(response)
     console.log("sha256: " + hash.hex())
          
         }
     )
     .catch(
         (error) => {
-            console.log(error); //Exepection error....
+            console.log(error) //Exepection error....
         }
     )
 
@@ -160,9 +160,9 @@ export default {
     hashAndSign: async function (file, component) {
       console.log(file.name)
     var serializedPDF = await pdf2base64(file.name)
-    console.log("base64: " + serializedPDF); 
-    var hash = sha256.create();
-    hash.update(serializedPDF);
+    console.log("base64: " + serializedPDF) 
+    var hash = sha256.create()
+    hash.update(serializedPDF)
     console.log("sha256: " + hash.hex())
     // return await component.uploadPut(file)
     return await component.uploadHtml4(file)
