@@ -24,7 +24,7 @@
   <button v-show="$refs.upload && $refs.upload.active" @click.prevent="$refs.upload.active = false" type="button">Stop upload</button> -->
 
 
-<div class="example-drag">
+<!-- <div class="example-drag">
     <div class="upload">
       <ul v-if="files.length">
         <li v-for="(file) in files" :key="file.id">
@@ -78,7 +78,13 @@
         </button>
       </div>
     </div>
-  </div>
+  </div> -->
+
+  <form action="/file-upload" class="dropzone">
+    <div class="fallback">
+      <input name="file" type="pdf" multiple />
+    </div>
+  </form>
 
   </div>
 </template>
