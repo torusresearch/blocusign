@@ -10,7 +10,7 @@ https
   .createServer(
     {
       key: fs.readFileSync("./ssl/server.key"),
-      cert: fs.readFileSync("./ssl/server.cert")
+      cert: fs.readFileSync("./ssl/server.crt")
     },
     app
   )
