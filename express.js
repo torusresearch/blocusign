@@ -9,8 +9,8 @@ app.use(express.static("dist"))
 https
   .createServer(
     {
-      key: fs.readFileSync("ssl/server.key"),
-      cert: fs.readFileSync("ssl/server.cert")
+      key: fs.readFileSync("./ssl/server.key"),
+      cert: fs.readFileSync("./ssl/server.cert")
     },
     app
   )
