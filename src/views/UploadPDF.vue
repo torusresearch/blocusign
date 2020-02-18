@@ -20,7 +20,7 @@
     <v-row justify="center" class="upload">
       <template v-if="files.length">
         <v-col cols="12" v-for="file in files" :key="file.id" align="center">
-          <span>{{ file.name }}</span><span v-if="responseIPFSHash != {}">-{{ responseIPFSHash }}-</span> 
+          <span>{{ file.name }}</span><span v-if="responseIPFSHash.length>3">- {{ responseIPFSHash }} -</span> 
           <span v-if="file.error">{{ file.error }}</span>
           <v-icon v-if="file.error" medium>mdi-alert-circle</v-icon>
           <v-icon v-else-if="file.success" medium>mdi-check-circle</v-icon>
@@ -71,7 +71,8 @@
           @click.prevent="$refs.upload.active = true"
         >
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
-          Start Upload
+          Upload
+          <v-icon right>mdi-cloud-upload-outline</v-icon>
         </v-btn>
         <v-btn
           type="button"
@@ -99,7 +100,8 @@
           class="btn btn-success"
           v-on:click="setRecipient(email)"
         >
-          Submit
+          Next
+          <v-icon right>mdi-skip-next</v-icon>
         </v-btn>
         <v-btn
           type="button"
@@ -108,6 +110,7 @@
         >
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
           Sign
+          <v-icon right>mdi-draw</v-icon>
         </v-btn>
         <v-btn
           type="button"
@@ -116,6 +119,7 @@
         >
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
           Send via Email
+          <v-icon right>mdi-email-outline</v-icon>
         </v-btn>
       </v-col>
     </v-row>
