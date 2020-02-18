@@ -106,25 +106,44 @@
         </v-btn>
       </v-col>
     </v-row>
-    <v-row justify="center" align="center" wrap v-if="currentStep === 2">
-      <!-- <v-btn
-          type="button"
-          class="btn btn-success"
-          v-on:click="signAndRequest()"
-        >
-          <i class="fa fa-arrow-up" aria-hidden="true"></i>
-          Sign
-          <v-icon right>mdi-draw</v-icon>
-        </v-btn> -->
-        <v-btn
-          type="button"
-          class="btn btn-success"
-          v-bind:href="'mailto:'+recipient"
-        >
-          <i class="fa fa-arrow-up" aria-hidden="true"></i>
-          Send via Email
-          <v-icon right>mdi-email-outline</v-icon>
-      </v-btn>
+    <v-row justify="center" align="center" wrap v-if="currentStep === 3">
+         <v-banner single-line >
+          <v-avatar
+            slot="icon"
+            color="primary"
+            size="36"
+          >
+            <v-icon
+              icon="mdi-lock"
+              color="white"
+            >
+              mdi-draw
+            </v-icon>
+          </v-avatar>
+          {{"https://blocusign.io/display?sigReqH="+responseIPFSHash}}
+          <input type="hidden" id="sign-link" :value="'https://blocusign.io/display?sigReqH='+responseIPFSHash">
+          <template v-slot:actions>
+             <v-btn
+              type="button"
+              class="btn btn-success"
+              v-on:click="copyLink()"
+            >
+              <i class="fa fa-arrow-up" aria-hidden="true"></i>
+              Copy
+              <v-icon right>mdi-content-copy</v-icon>
+            </v-btn>
+            <v-btn
+              type="button"
+              class="btn btn-success"
+              v-bind:href="'mailto:'+recipient"
+            >
+              <i class="fa fa-arrow-up" aria-hidden="true"></i>
+              Email
+              <v-icon right>mdi-email-outline</v-icon>
+            </v-btn>
+          </template>
+        </v-banner>
+
     </v-row>
     <v-row justify="center" align="center" v-if="(currentStep === 0)">
       <v-col align="center" cols="10">
@@ -417,6 +436,23 @@ export default {
     setRecipient(val) {
       this.recipient = val
       this.currentStep = this.steps.indexOf("Send")
+    },
+    copyLink () {
+      let testingCodeToCopy = document.querySelector('#sign-link')
+      testingCodeToCopy.setAttribute('type', 'text')    
+      testingCodeToCopy.select()
+
+      try {
+        var successful = document.execCommand('copy')
+        var msg = successful ? 'successful' : 'unsuccessful'
+        console.log('link code was copied ' + msg)
+      } catch (err) {
+        console.log('Oops, unable to copy')
+      }
+
+      /* unselect the range */
+      testingCodeToCopy.setAttribute('type', 'hidden')
+      window.getSelection().removeAllRanges()
     }
   }
 }
