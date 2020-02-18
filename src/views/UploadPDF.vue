@@ -13,7 +13,7 @@
         </div>
       </div>
       <div v-else>
-        <div class="text-center p-5">
+        <div>
           <h4>Drop files anywhere to upload<br/>or</h4>
         </div>
       </div>
@@ -22,7 +22,7 @@
         <h3>Drop files to upload</h3>
       </div>
 
-      <div class="text-center p-5">
+      <div>
         <file-upload
           class="btn btn-primary"
           post-action="/upload/post"
@@ -37,7 +37,20 @@
       </div>
 
       <canvas id="pdfViewer"></canvas>
-      <div id="page-num"></div>
+      <v-container fluid>
+        <v-row no-gutters>
+          <v-col sm="4">
+            <button v-on:click="prevPage()">&lt;</button>
+          </v-col>
+          <v-col sm="4">
+            <div id="page-num">0</div>
+          </v-col>
+          <v-col sm="4">
+            <button v-on:click="nextPage()">&gt;</button>
+          </v-col>
+        </v-row>
+      </v-container>
+      
 
       <div class="upload">
         <button type="button" class="btn btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
@@ -164,7 +177,7 @@ export default {
     /**
      * Displays previous page.
      */
-    onPrevPage() {
+    prevPage() {
       if (this.pageNum <= 1) {
         return
       }
@@ -174,7 +187,7 @@ export default {
     /**
      * Displays next page.
      */
-    onNextPage() {
+    nextPage() {
       if (this.pageNum >= this.pdfDoc.numPages) {
         return
       }
