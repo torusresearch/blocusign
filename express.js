@@ -16,6 +16,7 @@ const port =  process.env.PORT || 443
 
 
 const ipfsClient = require('ipfs-http-client')
+const { globSource } = ipfsClient
 
 // connect to ipfs daemon API server
 const ipfs = ipfsClient('http://localhost:5001')
@@ -24,9 +25,11 @@ const ipfs = ipfsClient('http://localhost:5001')
 app.use(express.static('dist'))
 app.post('/upload/post', upload.single('contract'), async (req, res) => {
   console.log("Got: " + req.file.filename + " from " + req.ip)
-  var ipfsRes = await ipfs.add(req.file)
-  console.log("Submitted " + req.file.filename + " to ipfs under " + ipfsRes.cid)
-  res.statusCode(201).send(ipfsRes.cid)
+  ipfs.add()
+  for await (const ipfsRes of  ipfs.add(globSource(req.file.path))) {
+      console.log("Submitted " + req.file.filename + " to ipfs under " + ipfsRes.cid)
+      res.statusCode(201).send(ipfsRes.cid)
+  }
 })
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/dist/index.html')
