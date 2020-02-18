@@ -1,5 +1,18 @@
 <template>
   <v-container fluid class="about">
+    <v-stepper>
+      <template>
+        <v-stepper-header>
+          <template v-for="step in steps">
+            <v-stepper-step :key="`${step}`" :complete="currentStep > steps.indexOf(step)"
+             :step="steps.indexOf(step) + 1" > {{ step }}
+            </v-stepper-step>
+            <v-divider :key="`${step}-divider`"></v-divider>
+          </template>
+        </v-stepper-header>
+
+      </template>
+    </v-stepper>
     <v-row justify="center" class="upload">
       <template v-if="files.length">
         <v-col cols="12" v-for="file in files" :key="file.id" align="center">
@@ -28,10 +41,13 @@
           name="contract"
           extensions="pdf"
         >
-          <v-btn type="button"
-          name="contract"
-          extensions="pdf"
-          class="btn btn-success">
+          <v-btn
+          v-if="typeof responseIPFSHash === 'string'"
+            type="button"
+            name="contract"
+            extensions="pdf"
+            class="btn btn-success"
+          >
             Select Files
           </v-btn>
         </file-upload>
@@ -85,8 +101,10 @@ import FileUpload from "vue-upload-component"
 export default {
   data() {
     return {
+      steps: ["Upload", "Send", "Sign", "Verify"],
+      currentStep: 0,
       previousFileSize: 0,
-      responseIPFSHash: '',
+      responseIPFSHash: "",
       files: [],
       pdfDoc: null,
       pageNum: 1,
@@ -113,7 +131,10 @@ export default {
         var fileUpload = fileUploaderFiles[0]
         var file = fileUpload.file
         this.responseIPFSHash = fileUpload.response
-        var self = this
+          var self = this
+        if (typeof fileUpload.response === 'string') {
+          self.currentStep++
+        }
         if (this.previousFileSize === file.size) {
           return
         }
@@ -215,8 +236,8 @@ export default {
 }
 </script>
 
-<style scoped>
-#pdfViewer{ 
+<style>
+#pdfViewer {
   width: 100%;
   height: 100%;
 }
