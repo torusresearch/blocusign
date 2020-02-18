@@ -107,7 +107,7 @@
       </v-col>
     </v-row>
     <v-row justify="center" align="center" wrap v-if="currentStep === 2">
-      <v-btn
+      <!-- <v-btn
           type="button"
           class="btn btn-success"
           v-on:click="signatureRequest()"
@@ -115,7 +115,7 @@
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
           Sign
           <v-icon right>mdi-draw</v-icon>
-        </v-btn>
+        </v-btn> -->
         <v-btn
           type="button"
           class="btn btn-success"
@@ -154,7 +154,7 @@ export default {
   data() {
     return {
       email: "",
-      steps: ["Upload", "Choose Recipient", "Sign", "Send"],
+      steps: ["Upload", "Choose Recipient", "Send"],
       currentStep: 0,
       previousFileSize: 0,
       responseIPFSHash: "",
@@ -388,7 +388,7 @@ export default {
      */
     setRecipient(val) {
       this.recipient = val
-      this.currentStep = this.steps.indexOf("Sign")
+      this.currentStep = this.steps.indexOf("Send")
     }
   }
 }
