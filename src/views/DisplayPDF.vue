@@ -1,25 +1,25 @@
 <template>
   <v-container fluid class="display-pdf">
-    <v-row id="woifowj" justify="center" align="center">
+    <v-row justify="center" align="center" wrap>
       <v-col v-for="(sig, index) in sigs" :key="index" cols="3" justify="center" align="center">
         <signature :sig="sig" :verifier="verifier" :verifierid="verifierid" :name="name" :invalid=true></signature>
       </v-col>
-    <v-row justify="center" align="center">
-      <v-col align="center" sm="10">
+    </v-row>
+    <v-row justify="center" align="center" wrap>
+      <v-col align="center" cols="10">
         <canvas id="pdfViewer"></canvas>
       </v-col>
     </v-row>
-    <v-row align="center">
-      <v-col sm="4" align="center">
+    <v-row align="center" justify="center" wrap>
+      <v-col cols="4" justify="center" align="center">
         <v-btn :hidden="!initialLoad"  v-on:click="prevPage()">&lt;</v-btn>
       </v-col>
-      <v-col sm="4" align="center">
+      <v-col cols="4" justify="center" align="center">
         <h4 :hidden="!initialLoad"  id="page-num" >{{pageNum}}</h4>
       </v-col>
-      <v-col sm="4" align="center">
+      <v-col cols="4" justify="center" align="center">
         <v-btn :hidden="!initialLoad" v-on:click="nextPage()">&gt;</v-btn>
       </v-col>
-    </v-row>
     </v-row>
   </v-container>
 </template>
@@ -176,3 +176,10 @@ export default {
   }
 }
 </script>
+
+<style>
+#pdfViewer {
+  width: 100%;
+  height: 100%;
+}
+</style>
