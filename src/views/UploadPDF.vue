@@ -283,34 +283,9 @@ export default {
         console.log("error, cant sign and request, no recipeient")
         return
       }
-
-      // get sender details
-      var myHeaders = new Headers()
-      var senderInfo = await window.torus.getUserInfo()
-      myHeaders.append("Content-Type", "application/json")
-      var raw = JSON.stringify({
-        jsonrpc: "2.0",
-        method: "VerifierLookupRequest",
-        id: 10,
-        params: {
-          verifier: senderInfo.verifier,
-          verifier_id: senderInfo.verifierId
-        }
-      })
-      var requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow"
-      }
-      var response = await fetch(
-        "https://torus-18.torusnode.com/jrpc",
-        requestOptions
-      )
-      var jsonText = await response.text()
-      var senderDetails = JSON.parse(jsonText)
-
       // get recipient details
+      var myHeaders = new Headers()
+      myHeaders.append("Content-Type", "application/json")
       await window.torus.getPublicAddress({
         verifier: "google",
         verifierId: this.recipient
@@ -339,21 +314,14 @@ export default {
         documentHash: this.responseIPFSHash,
         recipients: [
           {
-            pubkeyX: senderDetails.result.keys[0].pub_key_X,
-            pubkeyY: senderDetails.result.keys[0].pub_key_Y,
-            address: senderDetails.result.keys[0].address,
-            verifierId: senderInfo.verifierId,
-            verifier: senderInfo.verifier
+            address: window.torus.web3.eth.accounts[0],
           },
           {
-            pubkeyX: recipientDetails.result.keys[0].pub_key_X,
-            pubkeyY: recipientDetails.result.keys[0].pub_key_Y,
             address: recipientDetails.result.keys[0].address,
-            verifierId: this.recipient,
-            verifier: "google"
           }
         ]
       }
+      
       console.log(signingRequest)
       window.torus.web3.eth.sign(
         window.torus.web3.eth.accounts[0],
