@@ -383,7 +383,8 @@ export default {
 
       var signedMessage = {
         signatureRequestHash: sigRequestHash,
-        name: "REPLACE ME PLEASE"
+        name: "REPLACE ME PLEASE",
+        address: senderDetails.result.keys[0].address
       }
       var personalSign = Promise.promisify(window.torus.web3.personal.sign)
       var signature = await personalSign(
