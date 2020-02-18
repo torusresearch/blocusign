@@ -20,14 +20,16 @@
     <v-row justify="center" class="upload">
       <template v-if="files.length">
         <v-col cols="12" v-for="file in files" :key="file.id" align="center">
-          <span>{{ file.name }}</span> - <span>{{ responseIPFSHash }}</span> -
+          <span>{{ file.name }}</span><span v-if="responseIPFSHash != {}">-{{ responseIPFSHash }}-</span> 
           <span v-if="file.error">{{ file.error }}</span>
-          <span v-else-if="file.success">success</span>
+          <v-icon v-if="file.error" medium>mdi-alert-circle</v-icon>
+          <v-icon v-else-if="file.success" medium>mdi-check-circle</v-icon>
           <span v-else-if="file.active">active</span>
         </v-col>
       </template>
       <template v-else>
         <v-col cols="12" align="center">
+          <v-icon x-large>mdi-file</v-icon>
           <h4>Drop files anywhere to upload, or...</h4>
         </v-col>
       </template>
@@ -106,6 +108,14 @@
         >
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
           Sign
+        </v-btn>
+        <v-btn
+          type="button"
+          class="btn btn-success"
+          v-bind:href="'mailto:'+recipient"
+        >
+          <i class="fa fa-arrow-up" aria-hidden="true"></i>
+          Send via Email
         </v-btn>
       </v-col>
     </v-row>
@@ -334,7 +344,7 @@ export default {
       var jsonText2 = await response2.text()
       var recipientDetails = JSON.parse(jsonText2)
       // create signing request object
-      var signingRequest = {
+      var signatureRequest = {
         timeRequested: 1582046078510,
         documentHash: this.responseIPFSHash,
         recipients: [
@@ -350,14 +360,9 @@ export default {
           }
         ]
       }
-      console.log(signingRequest)
-      var personalSign = Promise.promisify(window.torus.web3.personal.sign)
-      var signature = await personalSign(
-        JSON.stringify(signingRequest),
-        window.torus.web3.eth.accounts[0],
-        )
+      console.log(signatureRequest)
 
-      console.log(signature)
+
 
       //submit to ipfs here
       var rawResponse = await fetch('https://blocusign.io/upload/signature-request', {
@@ -366,9 +371,35 @@ export default {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(signingRequest)
+        body: JSON.stringify(signatureRequest)
       })
-      console.log(rawResponse)
+      var sigRequestHash = await rawResponse.text()
+      console.log(sigRequestHash)
+
+
+      var signedMessage = {
+        signatureRequestHash: sigRequestHash,
+        name: "REPLACE ME PLEASE"
+      }
+      var personalSign = Promise.promisify(window.torus.web3.personal.sign)
+      var signature = await personalSign(
+        JSON.stringify(signedMessage),
+        window.torus.web3.eth.accounts[0],
+        )
+      console.log(signature)
+      var signatureStore = signedMessage
+      signatureStore.signature = signature
+
+      var sigStoreResp = await fetch('https://blocusign.io/upload/signature', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(signatureStore)
+      })
+      console.log(sigStoreResp)
+
 
     },
     /**
