@@ -110,7 +110,7 @@
       <v-btn
           type="button"
           class="btn btn-success"
-          v-on:click="signAndRequest()"
+          v-on:click="signatureRequest()"
         >
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
           Sign
@@ -289,7 +289,7 @@ export default {
     /**
      * Signs and request based on the hash
      */
-    signAndRequest: async function() {
+    signatureRequest: async function() {
       console.log("this is ", this)
       // validation checks
       if (this.responseIPFSHash == "") {
@@ -383,33 +383,6 @@ export default {
       })
       var sigRequestHash = await rawResponse.text()
       console.log(sigRequestHash)
-
-
-      var signedMessage = {
-        signatureRequestHash: sigRequestHash,
-        name: "REPLACE ME PLEASE",
-        address: senderDetails.result.keys[0].address
-      }
-      var personalSign = Promise.promisify(window.torus.web3.personal.sign)
-      var signature = await personalSign(
-        JSON.stringify(signedMessage),
-        window.torus.web3.eth.accounts[0],
-        )
-      console.log(signature)
-      var signatureStore = signedMessage
-      signatureStore.signature = signature
-
-      var sigStoreResp = await fetch('https://blocusign.io/upload/signature', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(signatureStore)
-      })
-      console.log(sigStoreResp)
-
-
     },
     /**
      * Get receipient
