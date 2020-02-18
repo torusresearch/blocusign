@@ -416,7 +416,7 @@ export default {
      */
     setRecipient(val) {
       this.recipient = val
-      this.currentStep ++
+      self.currentStep = self.steps.indexOf("Sign")
     }
   }
 }
