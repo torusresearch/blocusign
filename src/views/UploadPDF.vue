@@ -124,18 +124,18 @@
       </v-col>
     </v-row>
     <v-row justify="center" align="center" v-if="currentStep === 0">
-      <v-col align="center" sm="10">
+      <v-col align="center" cols="10">
         <canvas id="pdfViewer"></canvas>
       </v-col>
     </v-row>
     <v-row align="center" v-if="currentStep === 0">
-      <v-col sm="4" align="center">
+      <v-col cols="4" align="center">
         <v-btn :hidden="files.length === 0" v-on:click="prevPage()">&lt;</v-btn>
       </v-col>
-      <v-col sm="4" align="center">
-        <h4 id="page-num" :hidden="files.length === 0">0</h4>
+      <v-col cols="4" align="center">
+        <h4 id="page-num" :hidden="files.length === 0">{{pageNum}}</h4>
       </v-col>
-      <v-col sm="4" align="center">
+      <v-col cols="4" align="center">
         <v-btn :hidden="files.length === 0" v-on:click="nextPage()">&gt;</v-btn>
       </v-col>
     </v-row>

@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
-    <v-row justify="center" align="center">
-      <v-col cols="3">
+    <v-row class="fwfwf" justify="center" align="center">
+      <v-col cols="12">
         <v-row justify="center" align="center">
           <div class="signature-container" :class="{'invalid':invalid }">
           <v-col
