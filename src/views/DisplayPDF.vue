@@ -131,7 +131,7 @@ export default {
       var url = new URL(window.location.href)
       var paramsSigsH = url.searchParams.get('sigsH')
       if (!paramsSigsH) {
-        url.searchParams.add('sigsH', sigStoreResp)
+        url.searchParams.set('sigsH', sigStoreResp)
       } else {
         url.searchParams.set('sigsH', paramsSigsH + "," + sigStoreResp)
       }
