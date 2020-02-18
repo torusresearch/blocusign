@@ -24,7 +24,7 @@
   <button v-show="$refs.upload && $refs.upload.active" @click.prevent="$refs.upload.active = false" type="button">Stop upload</button> -->
 
 
-<!-- <div class="example-drag">
+<div class="example-drag">
     <div class="upload">
       <ul v-if="files.length">
         <li v-for="(file) in files" :key="file.id">
@@ -34,11 +34,7 @@
           <span v-else-if="file.success">success</span>
           <span v-else-if="file.active">active</span>
           <span v-else></span>
-          <pdf :src="file.name" :page="1">
-            <template slot="loading">
-              loading content here...
-            </template>
-          </pdf>
+           <canvas id="pdfViewer"></canvas>
         </li>
       </ul>
       <ul v-else>
@@ -78,21 +74,20 @@
         </button>
       </div>
     </div>
-  </div> -->
+  </div>
 
 
-      <input type="file"  accept="application/pdf" :name="uploadFieldName" @change="filesChange($event.target.name, $event.target.files)" />
-      <canvas id="pdfViewer"></canvas>
+      <!-- <input type="file"  accept="application/pdf" :name="uploadFieldName" @change="filesChange($event.target.name, $event.target.files)" />
+      <canvas id="pdfViewer"></canvas> -->
   </div>
 </template>
 
 <script>
 import pdfjsLib from "pdfjs-dist"
 // import pdf from 'pdfvuer'
-// import FileUpload from 'vue-upload-component'
+import FileUpload from 'vue-upload-component'
 import pdf2base64 from 'pdf-to-base64'
 import sha256 from 'js-sha256'
-import web3 from "web3"
 
 export default {
   data() {
@@ -121,7 +116,7 @@ export default {
   },
   components: {
     // pdf,
-    // FileUpload
+    FileUpload
   },
   methods: {
     /**
@@ -161,6 +156,43 @@ export default {
       if (URL && URL.createObjectURL) {
         newFile.blob = URL.createObjectURL(newFile.file)
       }
+    },
+    hashAndSign: async function (fileUploaderFile, component) {
+      console.log(fileUploaderFile)
+      var file = fileUploaderFile.file
+      var fileReader = new FileReader()
+
+      fileReader.onload = function () {
+        var typedarray = new Uint8Array(this.result)
+        pdfjsLib.getDocument(typedarray)
+        .then(function (pdf) {
+          window.pdf = pdf
+          // you can now use *pdf* here
+          console.log("the pdf has ", pdf.numPages, "page(s).")
+          pdf.getData().then(function (data) {
+            console.log(data.length)
+            // var hash = web3.sha3('0x'+Buffer.from(data).toString('hex'))
+            // console.log('hash', hash) 
+            // web3.eth.sign(web3.eth.accounts[0], hash, console.log)
+          })
+
+          pdf.getPage(1).then(function (page) {
+            var viewport = page.getViewport(2.0)
+            console.log(viewport)
+            var canvas = document.getElementById("pdfViewer")
+            canvas.height = viewport.height
+            canvas.width = viewport.width
+            page.render({
+              canvasContext: canvas.getContext('2d'),
+              viewport: viewport
+            })
+          })
+
+        })
+      }
+
+      fileReader.readAsArrayBuffer(file)
+      return await component.uploadHtml4(file)
     },
     filesChange: async function (fieldName, fileList) {
       console.log(fieldName)
