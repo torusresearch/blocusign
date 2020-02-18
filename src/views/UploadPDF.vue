@@ -31,7 +31,8 @@
           :drop-directory="true"
           v-model="files"
           ref="upload"
-          name="contract">
+          name="contract"
+          extensions="pdf">
           <button id="btn-upload" for="file" class="btn btn-lg btn-primary">Select Files</button>
         </file-upload>
       </div>
