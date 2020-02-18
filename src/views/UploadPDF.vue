@@ -1,77 +1,80 @@
 <template>
-  <div class="about">
-
-<div class="drag">
-    <div class="upload">
-      <div v-if="files.length">
-        <div v-for="(file) in files" :key="file.id">
-          <span>{{file.name}}</span> -
-          <span>{{file.size}}</span> -
-          <span v-if="file.error">{{file.error}}</span>
+  <v-container fluid class="about">
+    <v-row justify="center" class="upload">
+      <template v-if="files.length">
+        <v-col cols="12" v-for="file in files" :key="file.id" align="center">
+          <span>{{ file.name }}</span> - <span>{{ file.size }}</span> -
+          <span v-if="file.error">{{ file.error }}</span>
           <span v-else-if="file.success">success</span>
           <span v-else-if="file.active">active</span>
-        </div>
-      </div>
-      <div v-else>
-        <div>
-          <h4>Drop files anywhere to upload<br/>or</h4>
-        </div>
-      </div>
+        </v-col>
+      </template>
+      <template v-else>
+        <v-col cols="12" align="center">
+          <h4>Drop files anywhere to upload, or...</h4>
+        </v-col>
+      </template>
+    </v-row>
 
-      <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active">
-        <h3>Drop files to upload</h3>
-      </div>
-
-      <div>
+    <v-row justify="center" wrap>
+      <v-col cols="12" align="center">
         <file-upload
-          class="btn btn-primary"
           post-action="/upload/post"
           :multiple="false"
           :drop="true"
           :drop-directory="true"
           v-model="files"
           ref="upload"
-          name="contract">
-          <button id="btn-upload" for="file" class="btn btn-lg btn-primary">Select Files</button>
+        >
+          <v-btn type="button"
+          class="btn btn-success">
+            Select Files
+          </v-btn>
         </file-upload>
-      </div>
-
+      </v-col>
+    </v-row>
+    <v-row align="center">
       <canvas id="pdfViewer"></canvas>
-      <v-container fluid>
-        <v-row no-gutters>
-          <v-col sm="4">
-            <button v-on:click="prevPage()">&lt;</button>
-          </v-col>
-          <v-col sm="4">
-            <div id="page-num">0</div>
-          </v-col>
-          <v-col sm="4">
-            <button v-on:click="nextPage()">&gt;</button>
-          </v-col>
-        </v-row>
-      </v-container>
-      
-
-      <div class="upload">
-        <button type="button" class="btn btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
+    </v-row>
+    <v-row align="center">
+      <v-col sm="4" align="center">
+        <v-btn v-on:click="prevPage()">&lt;</v-btn>
+      </v-col>
+      <v-col sm="4" align="center">
+        <h4 id="page-num">0</h4>
+      </v-col>
+      <v-col sm="4" align="center">
+        <v-btn v-on:click="nextPage()">&gt;</v-btn>
+      </v-col>
+    </v-row>
+    <v-row class="upload">
+      <v-col align="center">
+        <v-btn
+          type="button"
+          class="btn btn-success"
+          v-if="!$refs.upload || !$refs.upload.active"
+          @click.prevent="$refs.upload.active = true"
+        >
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
           Start Upload
-        </button>
-        <button type="button" class="btn btn-danger"  v-else @click.prevent="$refs.upload.active = false">
+        </v-btn>
+        <v-btn
+          type="button"
+          class="btn btn-danger"
+          v-else
+          @click.prevent="$refs.upload.active = false"
+        >
           <i class="fa fa-stop" aria-hidden="true"></i>
           Stop Upload
-        </button>
-      </div>
-    </div>
-  </div>
-
-  </div>
+        </v-btn>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
 import pdfjsLib from "pdfjs-dist"
-import FileUpload from 'vue-upload-component'
-
+import FileUpload from "vue-upload-component"
 
 export default {
   data() {
@@ -83,15 +86,15 @@ export default {
       pageNumPending: null,
       scale: 1.0,
       canvas: null,
-      ctx: null,
+      ctx: null
     }
   },
   components: {
     FileUpload
   },
   mounted() {
-    this.canvas = document.getElementById('pdfViewer')
-    this.ctx = this.canvas.getContext('2d')
+    this.canvas = document.getElementById("pdfViewer")
+    this.ctx = this.canvas.getContext("2d")
   },
   watch: {
     files: {
@@ -101,14 +104,13 @@ export default {
         var self = this
         fileReader.onload = function() {
           var typedarray = new Uint8Array(this.result)
-          pdfjsLib.getDocument(typedarray)
-          .then(pdf => {
+          pdfjsLib.getDocument(typedarray).then(pdf => {
             self.updatePDF(pdf)
             console.log("the pdf has ", pdf.numPages, "page(s).")
             // pdf.getData().then((data) => {
             //   console.log(data.length)
             //   // var hash = web3.sha3('0x'+Buffer.from(data).toString('hex'))
-            //   // console.log('hash', hash) 
+            //   // console.log('hash', hash)
             //   // web3.eth.sign(web3.eth.accounts[0], hash, console.log)
             // })
             self.queueRenderPage(self.pageNum)
@@ -137,15 +139,15 @@ export default {
       console.log(this.canvas)
       // Using promise to fetch the page
       this.pdfDoc.getPage(num).then(page => {
-        var viewport = page.getViewport({ scale: this.scale, })
+        var viewport = page.getViewport({ scale: this.scale })
         this.canvas.height = viewport.height
-        console.log('WT2F')
+        console.log("WT2F")
         this.canvas.width = viewport.width
 
         // Render PDF page into canvas context
         var renderContext = {
           canvasContext: this.ctx,
-          viewport: viewport,
+          viewport: viewport
         }
         var renderTask = page.render(renderContext)
 
@@ -161,7 +163,7 @@ export default {
       })
 
       // Update page counters
-      document.getElementById('page-num').textContent = num
+      document.getElementById("page-num").textContent = num
     },
     /**
      * If another page rendering in progress, waits until the rendering is
@@ -197,7 +199,3 @@ export default {
   }
 }
 </script>
-
-<style>
-
-</style>
