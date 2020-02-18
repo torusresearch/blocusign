@@ -119,7 +119,7 @@
         <v-btn :hidden="files.length === 0" v-on:click="prevPage()">&lt;</v-btn>
       </v-col>
       <v-col sm="4" align="center">
-        <h4 id="page-num" :hidden="files.length === 0">0</h4>
+        <h4 id="page-num" :hidden="files.length === 0">{{pageNum}}</h4>
       </v-col>
       <v-col sm="4" align="center">
         <v-btn :hidden="files.length === 0" v-on:click="nextPage()">&gt;</v-btn>
