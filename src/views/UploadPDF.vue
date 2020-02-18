@@ -107,6 +107,16 @@
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
           Sign
         </v-btn>
+        <v-btn
+          type="button"
+          class="btn btn-success"
+          v-bind:href="'mailto:'+recipient"
+        >
+          <i class="fa fa-arrow-up" aria-hidden="true"></i>
+          Send via Email
+        </v-btn>
+
+  
       </v-col>
     </v-row>
     <v-row justify="center" align="center" v-if="currentStep === 0">
