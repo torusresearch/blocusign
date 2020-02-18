@@ -27,7 +27,7 @@ app.post('/upload/post', upload.single('contract'), async (req, res) => {
   console.log("Got: " + req.file.filename + " from " + req.ip)
   for await (const ipfsRes of ipfs.add(globSource(req.file.path))) {
       console.log("Submitted " + req.file.filename + " to ipfs under " + ipfsRes.cid)
-      res.status(201).send(ipfsRes.cid)
+      res.status(201).send(ipfsRes.cid +"")
   }
 })
 app.get('*', (req, res) => {
