@@ -107,7 +107,7 @@
       </v-col>
     </v-row>
     <v-row justify="center" align="center" wrap v-if="currentStep === 2">
-      <v-btn
+      <!-- <v-btn
           type="button"
           class="btn btn-success"
           v-on:click="signAndRequest()"
@@ -115,7 +115,7 @@
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
           Sign
           <v-icon right>mdi-draw</v-icon>
-        </v-btn>
+        </v-btn> -->
         <v-btn
           type="button"
           class="btn btn-success"
