@@ -36,6 +36,7 @@
           :drop-directory="true"
           v-model="files"
           ref="upload"
+          name="contract"
           @input-filter="inputFilter">
         </file-upload>
         <button type="button" class="btn btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
