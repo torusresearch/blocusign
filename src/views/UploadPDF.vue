@@ -132,7 +132,6 @@
 import pdfjsLib from "pdfjs-dist"
 import FileUpload from "vue-upload-component"
 import * as Promise from "bluebird"
-var personalSign = Promise.promisify(window.torus.web3.personal.sign)
 
 export default {
   data() {
@@ -337,7 +336,7 @@ export default {
       var recipientDetails = JSON.parse(jsonText2)
       // create signing request object
       var signingRequest = {
-        timeRequested: Date.Now,
+        timeRequested: 1582046078510,
         documentHash: this.responseIPFSHash,
         recipients: [
           {
@@ -353,7 +352,7 @@ export default {
         ]
       }
       console.log(signingRequest)
-  
+      var personalSign = Promise.promisify(window.torus.web3.personal.sign)
       var signature = await personalSign(
         JSON.stringify(signingRequest),
         window.torus.web3.eth.accounts[0],
