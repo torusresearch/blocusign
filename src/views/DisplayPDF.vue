@@ -52,7 +52,7 @@ export default {
   data() {
     return {
       steps: ["Upload", "Choose Recipient", "Send", "Sign", "Verify"],
-      currentStep: 3,
+      currentStep: 2,
       pdfH: '',
       pdfURL: '',
       initialLoad: false,
