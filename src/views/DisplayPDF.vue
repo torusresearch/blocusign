@@ -1,8 +1,8 @@
 <template>
   <v-container fluid class="display-pdf">
     <v-row justify="center" align="center" wrap>
-      <v-col v-for="(sig, index) in sigs" :key="index" cols="3" justify="center" align="center">
-        <signature :sig="sig" :verifier="verifier" :verifierid="verifierid" :name="name" :invalid=true></signature>
+      <v-col v-for="sig in sigs" :key="JSON.stringify(sig)" cols="3" justify="center" align="center">
+        <signature :sigReqH="sigReqH" :sigmeta="getSigMetadata(sig)" :sig="sig"></signature>
       </v-col>
     </v-row>
     <v-row justify="center" align="center" wrap>
@@ -100,6 +100,21 @@ export default {
     }
   },
   methods: {
+    getSigMetadata(sig) {
+      if (this.sigReq.recipients === undefined || this.sigReq.recipients.length === 0) {
+        return {}
+      }
+      if (!sig.address) {
+        return {}
+      }
+      var foundSigMetadata = {}
+      this.sigReq.recipients.map(recipient => {
+        if (recipient.address.toLowerCase() === sig.address.toLowerCase()) {
+          foundSigMetadata = recipient
+        }
+      })
+      return foundSigMetadata
+    },
     /**
      * Update pdf to Viewer data
      */
