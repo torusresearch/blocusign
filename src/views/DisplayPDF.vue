@@ -127,7 +127,7 @@ export default {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(signatureStore)
-      }).text()
+      }).then(resp => resp.text())
       var url = new URL(window.location.href)
       var paramsSigsH = url.searchParams.get('sigsH')
       if (!paramsSigsH) {
