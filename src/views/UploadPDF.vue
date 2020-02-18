@@ -364,7 +364,8 @@ export default {
         body: JSON.stringify(signatureRequest)
       })
       var respJson = await rawResponse.text()
-      var sigRequestHash = respJson.body
+      console.log(respJson)
+      var sigRequestHash = respJson
       console.log(sigRequestHash)
 
 
