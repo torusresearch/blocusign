@@ -256,6 +256,7 @@ export default {
      * Signs and request based on the hash
      */
     signAndRequest: async () => {
+      console.log("this is ", this)
       // validation checks
       if (this.responseIPFSHash == "") {
         console.log("error, cant sign and request, no responseIPFSHash")
