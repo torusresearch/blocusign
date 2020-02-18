@@ -155,7 +155,7 @@ export default {
   data() {
     return {
       email: "",
-      steps: ["Upload", "Choose Recipient", "Sign", "Send"],
+      steps: ["Upload", "Choose Recipient", "Send"],
       currentStep: 0,
       previousFileSize: 0,
       responseIPFSHash: "",
@@ -416,7 +416,7 @@ export default {
      */
     setRecipient(val) {
       this.recipient = val
-      this.currentStep = this.steps.indexOf("Sign")
+      this.currentStep = this.steps.indexOf("Send")
     }
   }
 }
