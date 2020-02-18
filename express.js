@@ -47,7 +47,7 @@ app.post('/upload/signature-request',bodyParser.json(), async (req, res) => {
 
   app.post('/upload/signature',bodyParser.json(), async (req, res) => {
     console.log("Got Sig: " + JSON.stringify(req.body) + " from " + req.ip)
-    var fileName = "uploads/signature/"+req.body.signatureRequest.documentHash+"-"+req.body.name
+    var fileName = "uploads/signature/"+req.body.signatureRequestHash+"-"+req.body.name
     fs.writeFile(fileName, JSON.stringify(req.body), async function(err) {
         if (err) {
             console.log(err)
