@@ -3,7 +3,7 @@
     <v-row justify="center" class="upload">
       <template v-if="files.length">
         <v-col cols="12" v-for="file in files" :key="file.id" align="center">
-          <span>{{ file.name }}</span> - <span>{{ file.size }}</span> -
+          <span>{{ file.name }}</span> - <span>{{ responseIPFSHash }}</span> - 
           <span v-if="file.error">{{ file.error }}</span>
           <span v-else-if="file.success">success</span>
           <span v-else-if="file.active">active</span>
@@ -85,6 +85,8 @@ import FileUpload from "vue-upload-component"
 export default {
   data() {
     return {
+      previousFileSize: 0,
+      responseIPFSHash: '',
       files: [],
       pdfDoc: null,
       pageNum: 1,
@@ -105,9 +107,18 @@ export default {
   watch: {
     files: {
       handler(fileUploaderFiles) {
-        var file = fileUploaderFiles[0].file
-        var fileReader = new FileReader()
+        if (fileUploaderFiles.length === 0) {
+          return
+        }
+        var fileUpload = fileUploaderFiles[0]
+        var file = fileUpload.file
+        this.responseIPFSHash = fileUpload.response
         var self = this
+        if (this.previousFileSize === file.size) {
+          return
+        }
+        this.previousFileSize = file.size
+        var fileReader = new FileReader()
         fileReader.onload = function() {
           var typedarray = new Uint8Array(this.result)
           pdfjsLib.getDocument(typedarray).then(pdf => {
@@ -142,7 +153,6 @@ export default {
      */
     renderPage(num) {
       this.pageRendering = true
-      console.log(this.canvas)
       // Using promise to fetch the page
       this.pdfDoc.getPage(num).then(page => {
         var viewport = page.getViewport({ scale: this.scale })
