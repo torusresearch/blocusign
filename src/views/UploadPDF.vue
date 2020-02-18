@@ -13,22 +13,16 @@
         </div>
       </div>
       <div v-else>
-        <td colspan="7">
-          <div class="text-center p-5">
-            <h4>Drop files anywhere to upload<br/>or</h4>
-            <button for="file" class="btn btn-lg btn-primary">Select Files</button>
-          </div>
-        </td>
+        <div class="text-center p-5">
+          <h4>Drop files anywhere to upload<br/>or</h4>
+        </div>
       </div>
 
       <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active">
         <h3>Drop files to upload</h3>
       </div>
 
-      <canvas id="pdfViewer"></canvas>
-      <div id="page-num"></div>
-
-      <div class="upload-btn">
+      <div class="text-center p-5">
         <file-upload
           class="btn btn-primary"
           post-action="/upload/post"
@@ -38,7 +32,14 @@
           v-model="files"
           ref="upload"
           name="contract">
+          <button id="btn-upload" for="file" class="btn btn-lg btn-primary">Select Files</button>
         </file-upload>
+      </div>
+
+      <canvas id="pdfViewer"></canvas>
+      <div id="page-num"></div>
+
+      <div class="upload">
         <button type="button" class="btn btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
           Start Upload
@@ -78,7 +79,6 @@ export default {
   mounted() {
     this.canvas = document.getElementById('pdfViewer')
     this.ctx = this.canvas.getContext('2d')
-    console.log('MOUNTED', this.canvas, this.ctx)
   },
   watch: {
     files: {
@@ -186,30 +186,5 @@ export default {
 </script>
 
 <style>
-.drag label.btn {
-  margin-bottom: 0;
-  margin-right: 1rem;
-}
-.drag .drop-active {
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  position: fixed;
-  z-index: 9999;
-  opacity: .6;
-  text-align: center;
-  background: #000;
-}
-.drag .drop-active h3 {
-  margin: -.5em 0 0;
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  font-size: 40px;
-  color: #fff;
-  padding: 0;
-}
 
 </style>

@@ -7,12 +7,14 @@ var upload = multer({ dest: 'uploads/' })
 const port =  process.env.PORT || 443
 
 app.use(express.static('dist'))
-
 app.post('/upload/post', upload.single('contract'), (req, res) => {
-    console.log("got " + req.file)
-    // here we should put ipfs
-    res.redirect('/')
-  })
+  console.log("got " + req.file)
+  // here we should put ipfs
+  res.redirect('/')
+})
+app.get('*', (req, res) => {
+  res.sendFile(__dirname + '/dist/index.html')
+})
 
 https
   .createServer(
