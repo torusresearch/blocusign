@@ -162,16 +162,6 @@ export default {
         newFile.blob = URL.createObjectURL(newFile.file)
       }
     },
-    hashAndSign: async function (file, component) {
-    console.log(file.name)
-    var serializedPDF = await pdf2base64(file.name)
-    console.log("base64: " + serializedPDF) 
-    var hash = sha256.create()
-    hash.update(serializedPDF)
-    console.log("sha256: " + hash.hex())
-    // return await component.uploadPut(file)
-    return await component.uploadHtml4(file)
-    },
     filesChange: async function (fieldName, fileList) {
       console.log(fieldName)
       console.log(fileList)
@@ -196,10 +186,9 @@ export default {
           pdf.getPage(1).then(function (page) {
             var viewport = page.getViewport(2.0)
             console.log(viewport)
-            var canvas = document.querySelector("pdfViewer")
+            var canvas = document.getElementById("pdfViewer")
             canvas.height = viewport.height
             canvas.width = viewport.width
-
             page.render({
               canvasContext: canvas.getContext('2d'),
               viewport: viewport
