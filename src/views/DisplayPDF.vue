@@ -1,5 +1,22 @@
 <template>
   <v-container fluid class="display-pdf">
+    <v-stepper>
+      <template>
+        <v-stepper-header>
+          <template v-for="step in steps">
+            <v-stepper-step
+              :key="`${step}`"
+              :complete="currentStep >= steps.indexOf(step)"
+              :editable="currentStep == steps.indexOf(step)"
+              :step="steps.indexOf(step) + 1"
+            >
+              {{ step }}
+            </v-stepper-step>
+            <v-divider :key="`${step}-divider`"></v-divider>
+          </template>
+        </v-stepper-header>
+      </template>
+    </v-stepper>
     <v-row justify="center" align="center" wrap>
       <v-col v-for="sig in sigs" :key="JSON.stringify(sig)" cols="3" justify="center" align="center">
         <signature :sigReqH="sigReqH" :sigmeta="getSigMetadata(sig)" :sig="sig"></signature>
@@ -34,6 +51,8 @@ import pdfjsLib from "pdfjs-dist"
 export default {
   data() {
     return {
+      steps: ["Upload", "Choose Recipient", "Send", "Sign", "Verify"],
+      currentStep: 3,
       pdfH: '',
       pdfURL: '',
       initialLoad: false,
@@ -72,6 +91,9 @@ export default {
       })
     }
     this.sigsH = this.$route.query.sigsH ? this.$route.query.sigsH.split(",").filter(sig => sig !== "") : this.sigsH
+    if (this.sigsH && this.sigsH.length > 0) {
+      this.currentStep = 4
+    }
     if (this.sigsH.length > 0) {
       for (var i = 0; i < this.sigsH.length; i++) {
         (function(i) {

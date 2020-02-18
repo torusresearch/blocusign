@@ -154,7 +154,7 @@ export default {
   data() {
     return {
       email: "",
-      steps: ["Upload", "Choose Recipient", "Send"],
+      steps: ["Upload", "Choose Recipient", "Send", "Sign", "Verify"],
       currentStep: 0,
       previousFileSize: 0,
       responseIPFSHash: "",
