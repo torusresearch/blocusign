@@ -33,11 +33,12 @@ app.post('/upload/post', upload.single('contract'), async (req, res) => {
 })
 app.post('/upload/signature-request',bodyParser.json(), async (req, res) => {
     console.log("Got Sig: " + JSON.stringify(req.body) + " from " + req.ip)
-    fs.writeFile("uploads/signature-request/"+req.body.documentHash, JSON.stringify(req.body), async function(err) {
+    var fileName = "uploads/signature-request/"+req.body.documentHash
+    fs.writeFile(fileName, JSON.stringify(req.body), async function(err) {
         if (err) {
             console.log(err)
         }
-        for await (const ipfsRes of ipfs.add(globSource("uploads/"+req.body.documentHash))) {
+        for await (const ipfsRes of ipfs.add(globSource(fileName))) {
             console.log("Submitted signature to ipfs under " + ipfsRes.cid)
             res.status(201).send(ipfsRes.cid +"")
         }
@@ -46,17 +47,18 @@ app.post('/upload/signature-request',bodyParser.json(), async (req, res) => {
 
   app.post('/upload/signature',bodyParser.json(), async (req, res) => {
     console.log("Got Sig: " + JSON.stringify(req.body) + " from " + req.ip)
-    fs.writeFile("uploads/signature/"+req.body.signatureRequest.documentHash+"-"+req.body.name, JSON.stringify(req.body), async function(err) {
+    var fileName = "uploads/signature/"+req.body.signatureRequest.documentHash+"-"+req.body.name
+    fs.writeFile(fileName, JSON.stringify(req.body), async function(err) {
         if (err) {
             console.log(err)
         }
-        for await (const ipfsRes of ipfs.add(globSource("uploads/"+req.body.documentHash))) {
+        for await (const ipfsRes of ipfs.add(globSource(fileName))) {
             console.log("Submitted signature to ipfs under " + ipfsRes.cid)
             res.status(201).send(ipfsRes.cid +"")
         }
     })
   })
-  
+
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/dist/index.html')
 })
