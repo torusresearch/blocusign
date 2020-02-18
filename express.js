@@ -3,6 +3,7 @@ const multer = require('multer')
 const fs = require('fs')
 const https = require('https')
 const app = express()
+var fs = require('fs')
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, 'uploads/')
@@ -30,6 +31,19 @@ app.post('/upload/post', upload.single('contract'), async (req, res) => {
       res.status(201).send(ipfsRes.cid +"")
   }
 })
+app.post('/upload/signature', async (req, res) => {
+    console.log("Got Sig: " + req.body + " from " + req.ip)
+    var sigObject = JSON.parse(req.body)
+    fs.writeFile("uploads/"+sigObject.documentHash, req.body, function(err) {
+        if (err) {
+            console.log(err);
+        }
+        for await (const ipfsRes of ipfs.add(globSource(req.file.path))) {
+            console.log("Submitted " + req.file.filename + " to ipfs under " + ipfsRes.cid)
+            res.status(201).send(ipfsRes.cid +"")
+        }
+    });
+  })
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/dist/index.html')
 })
