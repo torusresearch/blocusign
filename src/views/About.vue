@@ -80,20 +80,18 @@
     </div>
   </div> -->
 
-  <form action="/file-upload" class="dropzone">
-    <div class="fallback">
-      <input name="file" type="file" multiple />
-    </div>
-  </form>
+
+        <input type="file"  accept="application/pdf" :name="uploadFieldName" @change="filesChange($event.target.name, $event.target.files)" />
 
   </div>
 </template>
 
 <script>
-import pdf from 'pdfvuer'
+import pdfjsLib from "pdfjs-dist"
 import FileUpload from 'vue-upload-component'
 import pdf2base64 from 'pdf-to-base64'
 import sha256 from 'js-sha256'
+import web3 from "web3"
 
 export default {
   data() {
@@ -121,7 +119,6 @@ export default {
     }
   },
   components: {
-    pdf,
     FileUpload
   },
   methods: {
@@ -172,6 +169,44 @@ export default {
     console.log("sha256: " + hash.hex())
     // return await component.uploadPut(file)
     return await component.uploadHtml4(file)
+    },
+    filesChange: async function (fieldName, fileList) {
+      console.log(fieldName)
+      console.log(fileList)
+
+      var file = fileList[0]
+      var fileReader = new FileReader()
+
+      fileReader.onload = function () {
+        var typedarray = new Uint8Array(this.result)
+
+        pdfjsLib.getDocument(typedarray).then(function (pdf) {
+          window.pdf = pdf
+          // you can now use *pdf* here
+          console.log("the pdf has ", pdf.numPages, "page(s).")
+          pdf.getData().then(function (data) {
+            console.log(data.length)
+            var hash = web3.sha3('0x'+Buffer.from(data).toString('hex'))
+            console.log('hash', hash) 
+            // web3.eth.sign(web3.eth.accounts[0], hash, console.log)
+          })
+          pdf.getPage(1).then(function (page) {
+            var viewport = page.getViewport(2.0)
+            var canvas = document.querySelector("canvas")
+            canvas.height = viewport.height
+            canvas.width = viewport.width
+
+            page.render({
+              canvasContext: canvas.getContext('2d'),
+              viewport: viewport
+            })
+          })
+
+        })
+      }
+
+      fileReader.readAsArrayBuffer(file)
+      return
     }
   }
 }
