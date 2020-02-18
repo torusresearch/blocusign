@@ -22,12 +22,14 @@
         <v-col cols="12" v-for="file in files" :key="file.id" align="center">
           <span>{{ file.name }}</span> - <span>{{ responseIPFSHash }}</span> -
           <span v-if="file.error">{{ file.error }}</span>
-          <span v-else-if="file.success">success</span>
+          <v-icon v-if="file.error" medium>mdi-alert-circle</v-icon>
+          <v-icon v-else-if="file.success" medium>mdi-check-circle</v-icon>
           <span v-else-if="file.active">active</span>
         </v-col>
       </template>
       <template v-else>
         <v-col cols="12" align="center">
+          <v-icon x-large>mdi-file</v-icon>
           <h4>Drop files anywhere to upload, or...</h4>
         </v-col>
       </template>
@@ -115,8 +117,6 @@
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
           Send via Email
         </v-btn>
-
-  
       </v-col>
     </v-row>
     <v-row justify="center" align="center" v-if="currentStep === 0">
