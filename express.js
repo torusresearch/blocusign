@@ -15,12 +15,18 @@ var upload = multer({storage:storage})
 const port =  process.env.PORT || 443
 
 
+const ipfsClient = require('ipfs-http-client')
+
+// connect to ipfs daemon API server
+const ipfs = ipfsClient('http://localhost:5001')
+
 
 app.use(express.static('dist'))
-app.post('/upload/post', upload.single('contract'), (req, res) => {
-  console.log("got " + req.file)
-  // here we should put ipfs
-  res.redirect('/')
+app.post('/upload/post', upload.single('contract'), async (req, res) => {
+  console.log("Got: " + req.file.filename + " from " + req.ip)
+  var ipfsRes = await ipfs.add(req.file)
+  console.log("Submitted " + req.file.filename + " to ipfs under " + ipfsRes.cid)
+  res.statusCode(201).send(ipfsRes.cid)
 })
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/dist/index.html')
