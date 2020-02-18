@@ -1,4 +1,5 @@
 <template>
+<!-- <v-container fill-height>  https://github.com/vuetifyjs/vuetify/issues/8608 -->
   <v-container fluid class="about">
     <v-stepper>
       <template>
@@ -20,7 +21,7 @@
     <v-row justify="center" class="upload">
       <template v-if="files.length">
         <v-col cols="12" v-for="file in files" :key="file.id" align="center">
-          <span>{{ file.name }}</span><span v-if="responseIPFSHash != {}">-{{ responseIPFSHash }}-</span> 
+          <span>{{ file.name }}</span><span v-if="responseIPFSHash.length>3">- {{ responseIPFSHash }} -</span> 
           <span v-if="file.error">{{ file.error }}</span>
           <v-icon v-if="file.error" medium>mdi-alert-circle</v-icon>
           <v-icon v-else-if="file.success" medium>mdi-check-circle</v-icon>
@@ -30,7 +31,7 @@
       <template v-else>
         <v-col cols="12" align="center">
           <v-icon x-large>mdi-file</v-icon>
-          <h4>Drop files anywhere to upload, or...</h4>
+          <h4>Drop file to be signed anywhere, or...</h4>
         </v-col>
       </template>
     </v-row>
@@ -57,7 +58,7 @@
             extensions="pdf"
             class="btn btn-success"
           >
-            Select Files
+            Select File
           </v-btn>
         </file-upload>
       </v-col>
@@ -71,7 +72,8 @@
           @click.prevent="$refs.upload.active = true"
         >
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
-          Start Upload
+          Upload
+          <v-icon right>mdi-cloud-upload-outline</v-icon>
         </v-btn>
         <v-btn
           type="button"
@@ -99,15 +101,20 @@
           class="btn btn-success"
           v-on:click="setRecipient(email)"
         >
-          Submit
+          Next
+          <v-icon right>mdi-skip-next</v-icon>
         </v-btn>
-        <v-btn
+      </v-col>
+    </v-row>
+    <v-row justify="center" align="center" wrap v-if="currentStep === 2">
+      <v-btn
           type="button"
           class="btn btn-success"
           v-on:click="signAndRequest()"
         >
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
           Sign
+          <v-icon right>mdi-draw</v-icon>
         </v-btn>
         <v-btn
           type="button"
@@ -116,10 +123,10 @@
         >
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
           Send via Email
-        </v-btn>
-      </v-col>
+          <v-icon right>mdi-email-outline</v-icon>
+      </v-btn>
     </v-row>
-    <v-row justify="center" align="center" v-if="currentStep === 0">
+    <v-row justify="center" align="center" v-if="(currentStep === 0)">
       <v-col align="center" cols="10">
         <canvas id="pdfViewer"></canvas>
       </v-col>
@@ -136,6 +143,7 @@
       </v-col>
     </v-row>
   </v-container>
+   <!-- </v-container> -->
 </template>
 
 <script>
@@ -147,7 +155,7 @@ export default {
   data() {
     return {
       email: "",
-      steps: ["Upload", "Send", "Sign", "Verify"],
+      steps: ["Upload", "Choose Recipient", "Sign", "Send"],
       currentStep: 0,
       previousFileSize: 0,
       responseIPFSHash: "",
@@ -180,7 +188,7 @@ export default {
         this.responseIPFSHash = fileUpload.response
         var self = this
         if (typeof fileUpload.response === "string") {
-          self.currentStep = self.steps.indexOf("Send")
+          self.currentStep = self.steps.indexOf("Choose Recipient")
         }
         var fileReader = new FileReader()
         fileReader.onload = function() {
@@ -379,7 +387,8 @@ export default {
 
       var signedMessage = {
         signatureRequestHash: sigRequestHash,
-        name: "REPLACE ME PLEASE"
+        name: "REPLACE ME PLEASE",
+        address: senderDetails.result.keys[0].address
       }
       var personalSign = Promise.promisify(window.torus.web3.personal.sign)
       var signature = await personalSign(
@@ -407,6 +416,7 @@ export default {
      */
     setRecipient(val) {
       this.recipient = val
+      this.currentStep = this.steps.indexOf("Sign")
     }
   }
 }
