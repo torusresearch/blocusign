@@ -283,9 +283,34 @@ export default {
         console.log("error, cant sign and request, no recipeient")
         return
       }
-      // get recipient details
+
+      // get sender details
       var myHeaders = new Headers()
+      var senderInfo = await window.torus.getUserInfo()
       myHeaders.append("Content-Type", "application/json")
+      var raw = JSON.stringify({
+        jsonrpc: "2.0",
+        method: "VerifierLookupRequest",
+        id: 10,
+        params: {
+          verifier: senderInfo.verifier,
+          verifier_id: senderInfo.verifierId
+        }
+      })
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
+      }
+      var response = await fetch(
+        "https://torus-18.torusnode.com/jrpc",
+        requestOptions
+      )
+      var jsonText = await response.text()
+      var senderDetails = JSON.parse(jsonText)
+
+      // get recipient details
       await window.torus.getPublicAddress({
         verifier: "google",
         verifierId: this.recipient
@@ -314,14 +339,17 @@ export default {
         documentHash: this.responseIPFSHash,
         recipients: [
           {
-            address: window.torus.web3.eth.accounts[0],
+            address: senderDetails.result.keys[0].address,
+            verifierId: senderInfo.verifierId,
+            verifier: senderInfo.verifier
           },
           {
             address: recipientDetails.result.keys[0].address,
+            verifierId: this.recipient,
+            verifier: "google"
           }
         ]
       }
-      
       console.log(signingRequest)
       window.torus.web3.eth.sign(
         window.torus.web3.eth.accounts[0],
