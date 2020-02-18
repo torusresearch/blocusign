@@ -1,10 +1,31 @@
 <template>
   <v-container fluid class="display-pdf">
+    <v-stepper>
+      <template>
+        <v-stepper-header>
+          <template v-for="step in steps">
+            <v-stepper-step
+              :key="`${step}`"
+              :complete="currentStep >= steps.indexOf(step)"
+              :editable="currentStep == steps.indexOf(step)"
+              :step="steps.indexOf(step) + 1"
+            >
+              {{ step }}
+            </v-stepper-step>
+            <v-divider :key="`${step}-divider`"></v-divider>
+          </template>
+        </v-stepper-header>
+      </template>
+    </v-stepper>
     <v-row justify="center" align="center" wrap>
       <v-col v-for="sig in sigs" :key="JSON.stringify(sig)" cols="3" justify="center" align="center">
         <signature :sigReqH="sigReqH" :sigmeta="getSigMetadata(sig)" :sig="sig"></signature>
       </v-col>
     </v-row>
+    <v-row justify="center" align="center" wrap>
+      <v-text-field v-model="name"></v-text-field>
+      <v-btn v-on:click="signPDF()">Sign</v-btn>
+    </v-row> 
     <v-row justify="center" align="center" wrap>
       <v-col align="center" cols="10">
         <canvas id="pdfViewer"></canvas>
@@ -24,17 +45,20 @@
   </v-container>
 </template>
 <script>
+import * as Promise from "bluebird"
 import Signature from '../components/Signature.vue'
 import pdfjsLib from "pdfjs-dist"
 export default {
   data() {
     return {
+      steps: ["Upload", "Choose Recipient", "Send", "Sign", "Verify"],
+      currentStep: 2,
       pdfH: '',
       pdfURL: '',
       initialLoad: false,
       verifier: "facebook",
       verifierid: "23423231",
-      name: "Leonard Tan",
+      name: "Anonymous",
       sigReq: {},
       sigReqH: "",
       sigs: [],
@@ -67,6 +91,9 @@ export default {
       })
     }
     this.sigsH = this.$route.query.sigsH ? this.$route.query.sigsH.split(",").filter(sig => sig !== "") : this.sigsH
+    if (this.sigsH && this.sigsH.length > 0) {
+      this.currentStep = 4
+    }
     if (this.sigsH.length > 0) {
       for (var i = 0; i < this.sigsH.length; i++) {
         (function(i) {
@@ -100,6 +127,38 @@ export default {
     }
   },
   methods: {
+    signPDF: async function() {
+      var signedMessage = {
+        signatureRequestHash: this.sigReqH,
+        name: this.name,
+        address: window.web3.eth.accounts[0]
+      }
+      var personalSign = Promise.promisify(window.torus.web3.personal.sign)
+      var signature = await personalSign(
+        JSON.stringify(signedMessage),
+        window.torus.web3.eth.accounts[0],
+        )
+      console.log(signature)
+      var signatureStore = signedMessage
+      signatureStore.signature = signature
+
+      var sigStoreResp = await fetch('https://blocusign.io/upload/signature', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(signatureStore)
+      }).then(resp => resp.text())
+      var url = new URL(window.location.href)
+      var paramsSigsH = url.searchParams.get('sigsH')
+      if (!paramsSigsH) {
+        url.searchParams.set('sigsH', sigStoreResp)
+      } else {
+        url.searchParams.set('sigsH', paramsSigsH + "," + sigStoreResp)
+      }
+      window.location.href= url.toString()
+    },
     getSigMetadata(sig) {
       if (this.sigReq.recipients === undefined || this.sigReq.recipients.length === 0) {
         return {}
