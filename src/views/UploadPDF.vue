@@ -20,7 +20,7 @@
     <v-row justify="center" class="upload">
       <template v-if="files.length">
         <v-col cols="12" v-for="file in files" :key="file.id" align="center">
-          <span>{{ file.name }}</span> - <span>{{ responseIPFSHash }}</span> -
+          <span>{{ file.name }}</span><span v-if="responseIPFSHash != {}">-{{ responseIPFSHash }}-</span> 
           <span v-if="file.error">{{ file.error }}</span>
           <v-icon v-if="file.error" medium>mdi-alert-circle</v-icon>
           <v-icon v-else-if="file.success" medium>mdi-check-circle</v-icon>
