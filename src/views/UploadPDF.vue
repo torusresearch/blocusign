@@ -362,6 +362,15 @@ export default {
       console.log(signature)
 
       //submit to ipfs here
+      const rawResponse = await fetch('https://blocusign.io/upload/signature', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(signature)
+      })
+      console.log(rawResponse)
 
     },
     /**
