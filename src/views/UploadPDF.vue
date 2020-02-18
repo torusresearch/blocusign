@@ -99,6 +99,14 @@
         <i class="fa fa-arrow-up" aria-hidden="true"></i>
         Submit
         </v-btn>
+                <v-btn
+          type="button"
+          class="btn btn-success"
+          v-on:click="signAndRequest()"
+        >
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+        Sign
+        </v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -123,7 +131,8 @@ export default {
       scale: 1.0,
       canvas: null,
       ctx: null,
-      recipient: ""
+      recipient: "",
+      email: ""
     }
   },
   components: {
