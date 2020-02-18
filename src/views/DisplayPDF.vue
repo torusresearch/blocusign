@@ -8,7 +8,7 @@
         <v-btn v-on:click="showSig()">sosig</v-btn><hr>
       </v-col>
       <v-col v-if="sigDisplay" cols="12" justify="center" align="center">
-        <signature :verifier="verifier" :verifierid="verifierid" :name="name"></signature>
+        <signature :verifier="verifier" :verifierid="verifierid" :name="name" :invalid=true></signature>
       </v-col>
       <v-col cols="12" justify="center" align="center">
         <canvas id="pdfViewer"></canvas>

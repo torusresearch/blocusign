@@ -3,7 +3,7 @@
     <v-row justify="center" align="center">
       <v-col cols="3">
         <v-row justify="center" align="center">
-          <div class="signature-container">
+          <div class="signature-container" :class="{'invalid':invalid }">
           <v-col
             class="no-margin-padding"
             cols="12"
@@ -20,7 +20,7 @@
             align="center"
           >
             <v-row justify="center" align="center">
-                <logo :verifier="verifier" />
+                <logo :verifier="verifier" :invalid="invalid"/>
                 {{ verifierid }}
             </v-row>
           </v-col>
@@ -37,7 +37,7 @@ export default {
   data() {
     return {
       textSignature: null,
-      image: null
+      image: null,
     }
   },
   components: {
@@ -46,12 +46,16 @@ export default {
   props: {
     verifier: String,
     verifierid: String,
-    name: String
+    name: String,
+    invalid: Boolean,
   },
 }
 </script>
 
 <style scoped>
+.signature-container.invalid {
+  border: solid red 2px;
+}
 .signature-container {
   padding: 5px 5px 5px 5px;
   border: solid #1976d2 2px;
