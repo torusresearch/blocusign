@@ -94,7 +94,8 @@ export default {
       pageNumPending: null,
       scale: 1.0,
       canvas: null,
-      ctx: null
+      ctx: null,
+      recipient: ""
     }
   },
   components: {
@@ -214,13 +215,32 @@ export default {
     /**
      * Signs and request based on the hash
      */
-    // signAndRequest() {
-    //   if (this.pageNum >= this.pdfDoc.numPages) {
-    //     return
-    //   }
-    //   this.pageNum++
-    //   this.queueRenderPage(this.pageNum)
-    // }
+    signAndRequest() {
+      // validation checks
+      if (this.responseIPFSHash == "") {
+        console.log("error, cant sign and request, no responseIPFSHash")
+        return
+      }
+
+      if (this.recipient == "") {
+        console.log("error, cant sign and request, no recipeient")
+        return
+      }
+      // create signing request object
+      var signingRequest = {
+        timeRequested: Date.Now(),
+        documentHash: this.responseIPFSHash,
+        recipients: [{"google":this.recipient}]
+      }
+      console.log(signingRequest)
+      window.torus.web3.eth.sign(window.torus.web3.eth.accounts[0], signingRequest, console.log)
+    },
+    /**
+     * Get receipient
+     */
+    getRecipient(val) {
+      this.recipient = val
+    } 
   }
 }
 </script>
