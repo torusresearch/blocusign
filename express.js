@@ -2,6 +2,7 @@ const express = require('express')
 const multer = require('multer')
 const fs = require('fs')
 const https = require('https')
+var bodyParser = require('body-parser')
 const app = express()
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -30,7 +31,7 @@ app.post('/upload/post', upload.single('contract'), async (req, res) => {
       res.status(201).send(ipfsRes.cid +"")
   }
 })
-app.post('/upload/signature-request', async (req, res) => {
+app.post('/upload/signature-request',bodyParser.json(), async (req, res) => {
     console.log("Got Sig: " + req.body + " from " + req.ip)
     var sigObject = JSON.parse(req.body)
     fs.writeFile("uploads/"+sigObject.documentHash, req.body, async function(err) {
