@@ -310,7 +310,7 @@ export default {
       var recipientDetails = JSON.parse(jsonText2)
       // create signing request object
       var signingRequest = {
-        timeRequested: Date.Now(),
+        timeRequested: Date.Now,
         documentHash: this.responseIPFSHash,
         recipients: [
           {
