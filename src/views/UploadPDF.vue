@@ -334,7 +334,7 @@ export default {
       var jsonText2 = await response2.text()
       var recipientDetails = JSON.parse(jsonText2)
       // create signing request object
-      var signingRequest = {
+      var signatureRequest = {
         timeRequested: 1582046078510,
         documentHash: this.responseIPFSHash,
         recipients: [
@@ -350,10 +350,10 @@ export default {
           }
         ]
       }
-      console.log(signingRequest)
+      console.log(signatureRequest)
 
       var signedMessage = {
-        signingRequest: signingRequest,
+        signatureRequest: signatureRequest,
         name: "REPLACE ME PLEASE"
       }
       var personalSign = Promise.promisify(window.torus.web3.personal.sign)
@@ -372,7 +372,7 @@ export default {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(signingRequest)
+        body: JSON.stringify(signatureRequest)
       })
       console.log(rawResponse)
 
