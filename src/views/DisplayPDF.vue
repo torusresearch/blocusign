@@ -62,7 +62,7 @@ export default {
       sigReq: {},
       sigReqH: "",
       sigs: [],
-      sigsH: [""],
+      sigsH: [],
       pdfDoc: null,
       pageNum: 1,
       pageRendering: false,
@@ -90,7 +90,7 @@ export default {
         }
       })
     }
-    this.sigsH = this.$route.query.sigsH ? this.$route.query.sigsH.split(",").filter(sig => sig !== "") : this.sigsH
+    this.sigsH = this.$route.query.sigsH ? this.$route.query.sigsH.split(",").filter(sig => sig) : this.sigsH
     if (this.sigsH && this.sigsH.length > 0) {
       this.currentStep = 4
     }
