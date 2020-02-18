@@ -30,7 +30,7 @@
       <template v-else>
         <v-col cols="12" align="center">
           <v-icon x-large>mdi-file</v-icon>
-          <h4>Drop files anywhere to upload, or...</h4>
+          <h4>Drop file to be signed anywhere, or...</h4>
         </v-col>
       </template>
     </v-row>
@@ -57,7 +57,7 @@
             extensions="pdf"
             class="btn btn-success"
           >
-            Select Files
+            Select File
           </v-btn>
         </file-upload>
       </v-col>
