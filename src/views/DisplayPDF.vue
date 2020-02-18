@@ -24,8 +24,8 @@ export default {
     return {
       pdfipfs: 'QmbbLW8EPukkpmXiyt8EfrVHKsKJSvbVsaNAewRrdiv82D',
       sigDisplay: false,
-      verifier: "google",
-      verifierid: "leonard@tor.us",
+      verifier: "facebook",
+      verifierid: "23423231",
       name: "Leonard Tan"
     }
   },
@@ -43,7 +43,6 @@ export default {
         var objectURL = URL.createObjectURL(blob)
         pdfjs.getDocument(objectURL).then(pdf => {
           console.log("the pdf has ", pdf.numPages, " pages")
-          window.pdf = pdf
           return pdf.getPage(1)
         }).then(page => {
           var viewport = page.getViewport(2.0)

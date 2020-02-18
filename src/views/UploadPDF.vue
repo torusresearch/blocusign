@@ -158,7 +158,6 @@ export default {
   mounted() {
     this.canvas = document.getElementById("pdfViewer")
     this.ctx = this.canvas.getContext("2d")
-    window.ASDF = this
   },
   watch: {
     files: {
