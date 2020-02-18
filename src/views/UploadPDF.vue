@@ -271,7 +271,7 @@ export default {
     /**
      * Signs and request based on the hash
      */
-    signAndRequest: async () => {
+    signAndRequest: async function() {
       console.log("this is ", this)
       // validation checks
       if (this.responseIPFSHash == "") {
