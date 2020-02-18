@@ -3,7 +3,6 @@ const multer = require('multer')
 const fs = require('fs')
 const https = require('https')
 const app = express()
-var fs = require('fs')
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, 'uploads/')
