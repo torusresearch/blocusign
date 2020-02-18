@@ -4,19 +4,23 @@
       <template>
         <v-stepper-header>
           <template v-for="step in steps">
-            <v-stepper-step :key="`${step}`" :complete="currentStep > steps.indexOf(step)"
-             :step="steps.indexOf(step) + 1" > {{ step }}
+            <v-stepper-step
+              :key="`${step}`"
+              :complete="currentStep >= steps.indexOf(step)"
+              :editable="currentStep == steps.indexOf(step)"
+              :step="steps.indexOf(step) + 1"
+            >
+              {{ step }}
             </v-stepper-step>
             <v-divider :key="`${step}-divider`"></v-divider>
           </template>
         </v-stepper-header>
-
       </template>
     </v-stepper>
     <v-row justify="center" class="upload">
       <template v-if="files.length">
         <v-col cols="12" v-for="file in files" :key="file.id" align="center">
-          <span>{{ file.name }}</span> - <span>{{ responseIPFSHash }}</span> - 
+          <span>{{ file.name }}</span> - <span>{{ responseIPFSHash }}</span> -
           <span v-if="file.error">{{ file.error }}</span>
           <span v-else-if="file.success">success</span>
           <span v-else-if="file.active">active</span>
@@ -42,7 +46,10 @@
           extensions="pdf"
         >
           <v-btn
-          v-if="typeof responseIPFSHash === 'string'"
+            v-if="
+              typeof responseIPFSHash === 'string' &&
+                responseIPFSHash.length === 0
+            "
             type="button"
             name="contract"
             extensions="pdf"
@@ -53,24 +60,8 @@
         </file-upload>
       </v-col>
     </v-row>
-    <v-row justify="center">
-      <v-col align="center" sm="10">
-        <canvas id="pdfViewer"></canvas>
-      </v-col>
-    </v-row>
-    <v-row align="center">
-      <v-col sm="4" align="center">
-        <v-btn v-on:click="prevPage()">&lt;</v-btn>
-      </v-col>
-      <v-col sm="4" align="center">
-        <h4 id="page-num">0</h4>
-      </v-col>
-      <v-col sm="4" align="center">
-        <v-btn v-on:click="nextPage()">&gt;</v-btn>
-      </v-col>
-    </v-row>
-    <v-row class="upload">
-      <v-col align="center">
+    <v-row class="upload" v-if="files.length > 0 && this.currentStep === 0">
+      <v-col align="center" cols="12">
         <v-btn
           type="button"
           class="btn btn-success"
@@ -86,27 +77,52 @@
           v-else
           @click.prevent="$refs.upload.active = false"
         >
-          <i class="fa fa-stop" aria-hidden="true"></i>
           Stop Upload
         </v-btn>
-
-        <input v-on:keyup.enter="setRecipient(email)" v-model="email" placeholder="Enter recipient email e.g. hello@tor.us">
+      </v-col>
+    </v-row>
+    <v-row justify="center" align="center" wrap v-if="currentStep === 1">
+      <v-col cols="4" align="center">
+        <v-text-field
+          align="center"
+          v-on:keyup.enter="setRecipient(email)"
+          v-model="email"
+          placeholder="Enter recipient email e.g. hello@tor.us"
+        />
+      </v-col>
+      <v-col cols="2" align="center">
         <v-btn
+          align="center"
           type="button"
           class="btn btn-success"
           v-on:click="setRecipient(email)"
         >
-        <i class="fa fa-arrow-up" aria-hidden="true"></i>
-        Submit
+          Submit
         </v-btn>
-                <v-btn
+        <v-btn
           type="button"
           class="btn btn-success"
           v-on:click="signAndRequest()"
         >
-        <i class="fa fa-arrow-up" aria-hidden="true"></i>
-        Sign
+          <i class="fa fa-arrow-up" aria-hidden="true"></i>
+          Sign
         </v-btn>
+      </v-col>
+    </v-row>
+    <v-row justify="center" align="center" v-if="currentStep === 0">
+      <v-col align="center" sm="10">
+        <canvas id="pdfViewer"></canvas>
+      </v-col>
+    </v-row>
+    <v-row align="center" v-if="currentStep === 0">
+      <v-col sm="4" align="center">
+        <v-btn :hidden="files.length === 0" v-on:click="prevPage()">&lt;</v-btn>
+      </v-col>
+      <v-col sm="4" align="center">
+        <h4 id="page-num" :hidden="files.length === 0">0</h4>
+      </v-col>
+      <v-col sm="4" align="center">
+        <v-btn :hidden="files.length === 0" v-on:click="nextPage()">&gt;</v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -119,6 +135,7 @@ import FileUpload from "vue-upload-component"
 export default {
   data() {
     return {
+      email: "",
       steps: ["Upload", "Send", "Sign", "Verify"],
       currentStep: 0,
       previousFileSize: 0,
@@ -131,8 +148,7 @@ export default {
       scale: 1.0,
       canvas: null,
       ctx: null,
-      recipient: "",
-      email: ""
+      recipient: ""
     }
   },
   components: {
@@ -141,6 +157,7 @@ export default {
   mounted() {
     this.canvas = document.getElementById("pdfViewer")
     this.ctx = this.canvas.getContext("2d")
+    window.ASDF = this
   },
   watch: {
     files: {
@@ -151,14 +168,10 @@ export default {
         var fileUpload = fileUploaderFiles[0]
         var file = fileUpload.file
         this.responseIPFSHash = fileUpload.response
-          var self = this
-        if (typeof fileUpload.response === 'string') {
-          self.currentStep++
+        var self = this
+        if (typeof fileUpload.response === "string") {
+          self.currentStep = self.steps.indexOf("Send")
         }
-        if (this.previousFileSize === file.size) {
-          return
-        }
-        this.previousFileSize = file.size
         var fileReader = new FileReader()
         fileReader.onload = function() {
           var typedarray = new Uint8Array(this.result)
@@ -174,7 +187,10 @@ export default {
             self.queueRenderPage(self.pageNum)
           })
         }
-
+        if (this.previousFileSize === file.size) {
+          return
+        }
+        this.previousFileSize = file.size
         fileReader.readAsArrayBuffer(file)
         return
       },
@@ -272,60 +288,87 @@ export default {
       var myHeaders = new Headers()
       var senderInfo = await window.torus.getUserInfo()
       myHeaders.append("Content-Type", "application/json")
-      var raw = JSON.stringify({"jsonrpc":"2.0","method":"VerifierLookupRequest","id":10,"params":{"verifier":senderInfo.verifier,"verifier_id":senderInfo.verifierId}})
+      var raw = JSON.stringify({
+        jsonrpc: "2.0",
+        method: "VerifierLookupRequest",
+        id: 10,
+        params: {
+          verifier: senderInfo.verifier,
+          verifier_id: senderInfo.verifierId
+        }
+      })
       var requestOptions = {
-        method: 'POST',
+        method: "POST",
         headers: myHeaders,
         body: raw,
-        redirect: 'follow'
+        redirect: "follow"
       }
-      var response = await fetch("https://torus-18.torusnode.com/jrpc", requestOptions)
+      var response = await fetch(
+        "https://torus-18.torusnode.com/jrpc",
+        requestOptions
+      )
       var jsonText = await response.text()
       var senderDetails = JSON.parse(jsonText)
 
       // get recipient details
-      await window.torus.getPublicAddress({"verifier":"google", "verifierId":this.recipient})
-      var raw2 = JSON.stringify({"jsonrpc":"2.0","method":"VerifierLookupRequest","id":10,"params":{"verifier":"google","verifier_id":this.recipient}})
+      await window.torus.getPublicAddress({
+        verifier: "google",
+        verifierId: this.recipient
+      })
+      var raw2 = JSON.stringify({
+        jsonrpc: "2.0",
+        method: "VerifierLookupRequest",
+        id: 10,
+        params: { verifier: "google", verifier_id: this.recipient }
+      })
       var requestOptions2 = {
-        method: 'POST',
+        method: "POST",
         headers: myHeaders,
         body: raw2,
-        redirect: 'follow'
+        redirect: "follow"
       }
-      var response2 = await fetch("https://torus-18.torusnode.com/jrpc", requestOptions2)
+      var response2 = await fetch(
+        "https://torus-18.torusnode.com/jrpc",
+        requestOptions2
+      )
       var jsonText2 = await response2.text()
       var recipientDetails = JSON.parse(jsonText2)
       // create signing request object
       var signingRequest = {
         timeRequested: Date.Now(),
         documentHash: this.responseIPFSHash,
-        recipients: [{
-          "pubkeyX": senderDetails.result.keys[0].pub_key_X,
-          "pubkeyY": senderDetails.result.keys[0].pub_key_Y,
-          "address": senderDetails.result.keys[0].address,
-          "verifierId": senderInfo.verifierId,
-          "verifier": senderInfo.verifier
-        },
-        {
-          "pubkeyX": recipientDetails.result.keys[0].pub_key_X,
-          "pubkeyY": recipientDetails.result.keys[0].pub_key_Y,
-          "address": recipientDetails.result.keys[0].address,
-          "verifierId": this.recipient,
-          "verifier": "google"
-        }]
+        recipients: [
+          {
+            pubkeyX: senderDetails.result.keys[0].pub_key_X,
+            pubkeyY: senderDetails.result.keys[0].pub_key_Y,
+            address: senderDetails.result.keys[0].address,
+            verifierId: senderInfo.verifierId,
+            verifier: senderInfo.verifier
+          },
+          {
+            pubkeyX: recipientDetails.result.keys[0].pub_key_X,
+            pubkeyY: recipientDetails.result.keys[0].pub_key_Y,
+            address: recipientDetails.result.keys[0].address,
+            verifierId: this.recipient,
+            verifier: "google"
+          }
+        ]
       }
       console.log(signingRequest)
-      window.torus.web3.eth.sign(window.torus.web3.eth.accounts[0], JSON.stringify(signingRequest), console.log)
+      window.torus.web3.eth.sign(
+        window.torus.web3.eth.accounts[0],
+        JSON.stringify(signingRequest),
+        console.log
+      )
 
       //submit to ipfs here
-
     },
     /**
      * Get receipient
      */
     setRecipient(val) {
       this.recipient = val
-    } 
+    }
   }
 }
 </script>
