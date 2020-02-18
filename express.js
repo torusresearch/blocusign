@@ -4,7 +4,7 @@ const fs = require('fs')
 const https = require('https')
 const app = express()
 var upload = multer({ dest: 'uploads/' })
-const port = 443
+const port = 443 || process.env.PORT
 
 app.use(express.static('dist'))
 
