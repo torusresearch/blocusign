@@ -99,6 +99,14 @@
         >
           Submit
         </v-btn>
+        <v-btn
+          type="button"
+          class="btn btn-success"
+          v-on:click="signAndRequest()"
+        >
+          <i class="fa fa-arrow-up" aria-hidden="true"></i>
+          Sign
+        </v-btn>
       </v-col>
     </v-row>
     <v-row justify="center" align="center" v-if="currentStep === 0">
@@ -263,7 +271,7 @@ export default {
     /**
      * Signs and request based on the hash
      */
-    signAndRequest() {
+    signAndRequest: async () => {
       // validation checks
       if (this.responseIPFSHash == "") {
         console.log("error, cant sign and request, no responseIPFSHash")
@@ -274,18 +282,85 @@ export default {
         console.log("error, cant sign and request, no recipeient")
         return
       }
+
+      // get sender details
+      var myHeaders = new Headers()
+      var senderInfo = await window.torus.getUserInfo()
+      myHeaders.append("Content-Type", "application/json")
+      var raw = JSON.stringify({
+        jsonrpc: "2.0",
+        method: "VerifierLookupRequest",
+        id: 10,
+        params: {
+          verifier: senderInfo.verifier,
+          verifier_id: senderInfo.verifierId
+        }
+      })
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
+      }
+      var response = await fetch(
+        "https://torus-18.torusnode.com/jrpc",
+        requestOptions
+      )
+      var jsonText = await response.text()
+      var senderDetails = JSON.parse(jsonText)
+
+      // get recipient details
+      await window.torus.getPublicAddress({
+        verifier: "google",
+        verifierId: this.recipient
+      })
+      var raw2 = JSON.stringify({
+        jsonrpc: "2.0",
+        method: "VerifierLookupRequest",
+        id: 10,
+        params: { verifier: "google", verifier_id: this.recipient }
+      })
+      var requestOptions2 = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw2,
+        redirect: "follow"
+      }
+      var response2 = await fetch(
+        "https://torus-18.torusnode.com/jrpc",
+        requestOptions2
+      )
+      var jsonText2 = await response2.text()
+      var recipientDetails = JSON.parse(jsonText2)
       // create signing request object
       var signingRequest = {
         timeRequested: Date.Now(),
         documentHash: this.responseIPFSHash,
-        recipients: [{ google: this.recipient }]
+        recipients: [
+          {
+            pubkeyX: senderDetails.result.keys[0].pub_key_X,
+            pubkeyY: senderDetails.result.keys[0].pub_key_Y,
+            address: senderDetails.result.keys[0].address,
+            verifierId: senderInfo.verifierId,
+            verifier: senderInfo.verifier
+          },
+          {
+            pubkeyX: recipientDetails.result.keys[0].pub_key_X,
+            pubkeyY: recipientDetails.result.keys[0].pub_key_Y,
+            address: recipientDetails.result.keys[0].address,
+            verifierId: this.recipient,
+            verifier: "google"
+          }
+        ]
       }
       console.log(signingRequest)
       window.torus.web3.eth.sign(
         window.torus.web3.eth.accounts[0],
-        signingRequest,
+        JSON.stringify(signingRequest),
         console.log
       )
+
+      //submit to ipfs here
     },
     /**
      * Get receipient
