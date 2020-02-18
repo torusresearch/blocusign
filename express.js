@@ -3,8 +3,18 @@ const multer = require('multer')
 const fs = require('fs')
 const https = require('https')
 const app = express()
-var upload = multer({ dest: 'uploads/' })
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'uploads/')
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname + '-' + Date.now())
+    }
+  })
+var upload = multer({storage:storage})
 const port =  process.env.PORT || 443
+
+
 
 app.use(express.static('dist'))
 app.post('/upload/post', upload.single('contract'), (req, res) => {
