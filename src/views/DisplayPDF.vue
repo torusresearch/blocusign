@@ -79,6 +79,7 @@ export default {
     this.canvas = document.getElementById("pdfViewer")
     this.ctx = this.canvas.getContext("2d")
     this.sigReqH = this.$route.query.sigReqH || this.sigReqH
+    window.disp = this
     if (this.sigReqH !== "") {
       var self = this
       fetch("https://ipfs.io/ipfs/" + this.sigReqH).then(resp => resp.json())
