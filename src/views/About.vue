@@ -81,14 +81,15 @@
   </div> -->
 
 
-        <input type="file"  accept="application/pdf" :name="uploadFieldName" @change="filesChange($event.target.name, $event.target.files)" />
-
+      <input type="file"  accept="application/pdf" :name="uploadFieldName" @change="filesChange($event.target.name, $event.target.files)" />
+      <canvas id="pdfViewer"></canvas>
   </div>
 </template>
 
 <script>
 import pdfjsLib from "pdfjs-dist"
-import FileUpload from 'vue-upload-component'
+// import pdf from 'pdfvuer'
+// import FileUpload from 'vue-upload-component'
 import pdf2base64 from 'pdf-to-base64'
 import sha256 from 'js-sha256'
 import web3 from "web3"
@@ -119,7 +120,8 @@ export default {
     }
   },
   components: {
-    FileUpload
+    // pdf,
+    // FileUpload
   },
   methods: {
     /**
@@ -161,7 +163,7 @@ export default {
       }
     },
     hashAndSign: async function (file, component) {
-      console.log(file.name)
+    console.log(file.name)
     var serializedPDF = await pdf2base64(file.name)
     console.log("base64: " + serializedPDF) 
     var hash = sha256.create()
@@ -179,20 +181,22 @@ export default {
 
       fileReader.onload = function () {
         var typedarray = new Uint8Array(this.result)
-
-        pdfjsLib.getDocument(typedarray).then(function (pdf) {
+        pdfjsLib.getDocument(typedarray)
+        .then(function (pdf) {
           window.pdf = pdf
           // you can now use *pdf* here
           console.log("the pdf has ", pdf.numPages, "page(s).")
           pdf.getData().then(function (data) {
             console.log(data.length)
-            var hash = web3.sha3('0x'+Buffer.from(data).toString('hex'))
-            console.log('hash', hash) 
+            // var hash = web3.sha3('0x'+Buffer.from(data).toString('hex'))
+            // console.log('hash', hash) 
             // web3.eth.sign(web3.eth.accounts[0], hash, console.log)
           })
+
           pdf.getPage(1).then(function (page) {
             var viewport = page.getViewport(2.0)
-            var canvas = document.querySelector("canvas")
+            console.log(viewport)
+            var canvas = document.querySelector("pdfViewer")
             canvas.height = viewport.height
             canvas.width = viewport.width
 
