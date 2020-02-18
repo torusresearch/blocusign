@@ -56,10 +56,11 @@ export default {
   mounted() {
     console.log('MOUNTED RENDERING', JSON.stringify(this.sigmeta), JSON.stringify(this.sig))
     // verify sig is correct
+        this.name = this.sig.name
         if (Object.keys(this.sigmeta).length === 0) {
           this.invalid = true
+          return
         }
-        this.name = this.sig.name
         this.verifier = this.sigmeta.verifier
         this.verifierid = this.sigmeta.verifierId
         // check if sig matches meta
