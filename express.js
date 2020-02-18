@@ -33,15 +33,15 @@ app.post('/upload/post', upload.single('contract'), async (req, res) => {
 app.post('/upload/signature', async (req, res) => {
     console.log("Got Sig: " + req.body + " from " + req.ip)
     var sigObject = JSON.parse(req.body)
-    fs.writeFile("uploads/"+sigObject.documentHash, req.body, function(err) {
+    fs.writeFile("uploads/"+sigObject.documentHash, req.body, async function(err) {
         if (err) {
-            console.log(err);
+            console.log(err)
         }
         for await (const ipfsRes of ipfs.add(globSource(req.file.path))) {
             console.log("Submitted " + req.file.filename + " to ipfs under " + ipfsRes.cid)
             res.status(201).send(ipfsRes.cid +"")
         }
-    });
+    })
   })
 app.get('*', (req, res) => {
   res.sendFile(__dirname + '/dist/index.html')
