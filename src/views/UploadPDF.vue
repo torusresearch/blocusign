@@ -25,6 +25,8 @@
           :drop-directory="true"
           v-model="files"
           ref="upload"
+          name="contract"
+          extensions="pdf"
         >
           <v-btn type="button"
           name="contract"
