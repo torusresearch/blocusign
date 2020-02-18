@@ -149,7 +149,6 @@
 <script>
 import pdfjsLib from "pdfjs-dist"
 import FileUpload from "vue-upload-component"
-import * as Promise from "bluebird"
 
 export default {
   data() {

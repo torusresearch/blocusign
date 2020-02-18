@@ -6,6 +6,10 @@
       </v-col>
     </v-row>
     <v-row justify="center" align="center" wrap>
+      <v-text-field v-model="name"></v-text-field>
+      <v-btn v-on:click="signPDF()">Sign</v-btn>
+    </v-row> 
+    <v-row justify="center" align="center" wrap>
       <v-col align="center" cols="10">
         <canvas id="pdfViewer"></canvas>
       </v-col>
@@ -24,6 +28,7 @@
   </v-container>
 </template>
 <script>
+import * as Promise from "bluebird"
 import Signature from '../components/Signature.vue'
 import pdfjsLib from "pdfjs-dist"
 export default {
@@ -34,7 +39,7 @@ export default {
       initialLoad: false,
       verifier: "facebook",
       verifierid: "23423231",
-      name: "Leonard Tan",
+      name: "Anonymous",
       sigReq: {},
       sigReqH: "",
       sigs: [],
@@ -100,6 +105,38 @@ export default {
     }
   },
   methods: {
+    signPDF: async function() {
+      var signedMessage = {
+        signatureRequestHash: this.sigReqH,
+        name: this.name,
+        address: window.web3.eth.accounts[0]
+      }
+      var personalSign = Promise.promisify(window.torus.web3.personal.sign)
+      var signature = await personalSign(
+        JSON.stringify(signedMessage),
+        window.torus.web3.eth.accounts[0],
+        )
+      console.log(signature)
+      var signatureStore = signedMessage
+      signatureStore.signature = signature
+
+      var sigStoreResp = await fetch('https://blocusign.io/upload/signature', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(signatureStore)
+      })
+      var url = new URL(window.location.href)
+      var paramsSigsH = url.searchParams.get('sigsH')
+      if (paramsSigsH.length === 0) {
+        url.searchParams.add('sigsH', sigStoreResp)
+      } else {
+        url.searchParams.set('sigsH', paramsSigsH + "," + sigStoreResp)
+      }
+      window.location.href= url.toString()
+    },
     getSigMetadata(sig) {
       if (this.sigReq.recipients === undefined || this.sigReq.recipients.length === 0) {
         return {}
