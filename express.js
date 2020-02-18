@@ -30,7 +30,7 @@ app.post('/upload/post', upload.single('contract'), async (req, res) => {
       res.status(201).send(ipfsRes.cid +"")
   }
 })
-app.post('/upload/signature', async (req, res) => {
+app.post('/upload/signature-request', async (req, res) => {
     console.log("Got Sig: " + req.body + " from " + req.ip)
     var sigObject = JSON.parse(req.body)
     fs.writeFile("uploads/"+sigObject.documentHash, req.body, async function(err) {
