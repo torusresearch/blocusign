@@ -1,4 +1,5 @@
 <template>
+<v-container fill-height> <!--  https://github.com/vuetifyjs/vuetify/issues/8608 -->
   <v-container fluid class="about">
     <v-stepper>
       <template>
@@ -103,7 +104,10 @@
           Next
           <v-icon right>mdi-skip-next</v-icon>
         </v-btn>
-        <v-btn
+      </v-col>
+    </v-row>
+    <v-row justify="center" align="center" wrap v-if="currentStep === 2">
+      <v-btn
           type="button"
           class="btn btn-success"
           v-on:click="signAndRequest()"
@@ -120,10 +124,9 @@
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
           Send via Email
           <v-icon right>mdi-email-outline</v-icon>
-        </v-btn>
-      </v-col>
+      </v-btn>
     </v-row>
-    <v-row justify="center" align="center" v-if="currentStep === 0">
+    <v-row justify="center" align="center" v-if="(currentStep === 0)">
       <v-col align="center" cols="10">
         <canvas id="pdfViewer"></canvas>
       </v-col>
@@ -140,6 +143,7 @@
       </v-col>
     </v-row>
   </v-container>
+   </v-container>
 </template>
 
 <script>
@@ -412,6 +416,7 @@ export default {
      */
     setRecipient(val) {
       this.recipient = val
+      this.currentStep ++
     }
   }
 }
