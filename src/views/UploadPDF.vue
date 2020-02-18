@@ -1,5 +1,5 @@
 <template>
-<v-container fill-height> <!--  https://github.com/vuetifyjs/vuetify/issues/8608 -->
+<!-- <v-container fill-height>  https://github.com/vuetifyjs/vuetify/issues/8608 -->
   <v-container fluid class="about">
     <v-stepper>
       <template>
@@ -143,7 +143,7 @@
       </v-col>
     </v-row>
   </v-container>
-   </v-container>
+   <!-- </v-container> -->
 </template>
 
 <script>
