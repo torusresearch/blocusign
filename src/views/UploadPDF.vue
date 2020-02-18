@@ -1,33 +1,34 @@
 <template>
   <div class="about">
 
-<div class="example-drag">
+<div class="drag">
     <div class="upload">
-      <ul v-if="files.length">
-        <li v-for="(file) in files" :key="file.id">
+      <div v-if="files.length">
+        <div v-for="(file) in files" :key="file.id">
           <span>{{file.name}}</span> -
-          <span>{{file.size | formatSize}}</span> -
+          <span>{{file.size}}</span> -
           <span v-if="file.error">{{file.error}}</span>
           <span v-else-if="file.success">success</span>
           <span v-else-if="file.active">active</span>
-          <span v-else></span>
-           <canvas id="pdfViewer"></canvas>
-        </li>
-      </ul>
-      <ul v-else>
+        </div>
+      </div>
+      <div v-else>
         <td colspan="7">
           <div class="text-center p-5">
             <h4>Drop files anywhere to upload<br/>or</h4>
-            <label for="file" class="btn btn-lg btn-primary">Select Files</label>
+            <button for="file" class="btn btn-lg btn-primary">Select Files</button>
           </div>
         </td>
-      </ul>
+      </div>
 
       <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active">
         <h3>Drop files to upload</h3>
       </div>
 
-      <div class="example-btn">
+      <canvas id="pdfViewer"></canvas>
+      <div id="page-num"></div>
+
+      <div class="upload-btn">
         <file-upload
           class="btn btn-primary"
           post-action="/upload/post"
@@ -36,8 +37,7 @@
           :drop-directory="true"
           v-model="files"
           ref="upload"
-          name="contract"
-          @input-filter="inputFilter">
+          name="contract">
         </file-upload>
         <button type="button" class="btn btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
@@ -62,138 +62,135 @@ import FileUpload from 'vue-upload-component'
 export default {
   data() {
     return {
-       files: []
+      files: [],
+      pdfDoc: null,
+      pageNum: 1,
+      pageRendering: false,
+      pageNumPending: null,
+      scale: 1.0,
+      canvas: null,
+      ctx: null,
     }
   },
   components: {
     FileUpload
   },
+  mounted() {
+    this.canvas = document.getElementById('pdfViewer')
+    this.ctx = this.canvas.getContext('2d')
+    console.log('MOUNTED', this.canvas, this.ctx)
+  },
   watch: {
-    files: async function (fileUploaderFiles) {
-      var file = fileUploaderFiles[0].file
-      var fileReader = new FileReader()
-
-      fileReader.onload = function () {
-        var typedarray = new Uint8Array(this.result)
-        pdfjsLib.getDocument(typedarray)
-        .then(function (pdf) {
-          window.pdf = pdf
-          // you can now use *pdf* here
-          console.log("the pdf has ", pdf.numPages, "page(s).")
-          pdf.getData().then(function (data) {
-            console.log(data.length)
-            // var hash = web3.sha3('0x'+Buffer.from(data).toString('hex'))
-            // console.log('hash', hash) 
-            // web3.eth.sign(web3.eth.accounts[0], hash, console.log)
+    files: {
+      handler(fileUploaderFiles) {
+        var file = fileUploaderFiles[0].file
+        var fileReader = new FileReader()
+        var self = this
+        fileReader.onload = function() {
+          var typedarray = new Uint8Array(this.result)
+          pdfjsLib.getDocument(typedarray)
+          .then(pdf => {
+            self.updatePDF(pdf)
+            console.log("the pdf has ", pdf.numPages, "page(s).")
+            // pdf.getData().then((data) => {
+            //   console.log(data.length)
+            //   // var hash = web3.sha3('0x'+Buffer.from(data).toString('hex'))
+            //   // console.log('hash', hash) 
+            //   // web3.eth.sign(web3.eth.accounts[0], hash, console.log)
+            // })
+            self.queueRenderPage(self.pageNum)
           })
+        }
 
-          pdf.getPage(1).then(function (page) {
-            var viewport = page.getViewport(2.0)
-            console.log(viewport)
-            var canvas = document.getElementById("pdfViewer")
-            canvas.height = viewport.height
-            canvas.width = viewport.width
-            page.render({
-              canvasContext: canvas.getContext('2d'),
-              viewport: viewport
-            })
-          })
-
-        })
-      }
-
-      fileReader.readAsArrayBuffer(file)
-      return
-    },
+        fileReader.readAsArrayBuffer(file)
+        return
+      },
+      deep: true
+    }
   },
   methods: {
-    // /**
-    //  * Has changed
-    //  * @param  Object|undefined   newFile   Read only
-    //  * @param  Object|undefined   oldFile   Read only
-    //  * @return undefined
-    //  */
-    // inputFile: function (newFile, oldFile) {
-    //   if (newFile && oldFile && !newFile.active && oldFile.active) {
-    //     // Get response data
-    //     console.log('response', newFile.response)
-    //     if (newFile.xhr) {
-    //       //  Get the response status code
-    //       console.log('status', newFile.xhr.status)
-    //     }
-    //   }
-    // },
     /**
-     * Pretreatment
-     * @param  Object|undefined   newFile   Read and write
-     * @param  Object|undefined   oldFile   Read only
-     * @param  Function           prevent   Prevent changing
-     * @return undefined
+     * Update pdf to Viewer data
      */
-    inputFilter: function (newFile, oldFile, prevent) {
-      if (newFile && !oldFile) {
-        // Filter non-image file
-        if (!/\.(pdf)$/i.test(newFile.name)) {
-          return prevent()
-        }
-      }
+    updatePDF(pdfDoc) {
+      this.pdfDoc = pdfDoc
+    },
+    /**
+     * Get page info from document, resize canvas accordingly, and render page.
+     * @param num Page number.
+     */
+    renderPage(num) {
+      this.pageRendering = true
+      console.log(this.canvas)
+      // Using promise to fetch the page
+      this.pdfDoc.getPage(num).then(page => {
+        var viewport = page.getViewport({ scale: this.scale, })
+        this.canvas.height = viewport.height
+        console.log('WT2F')
+        this.canvas.width = viewport.width
 
-      // Create a blob field
-      newFile.blob = ''
-      let URL = window.URL || window.webkitURL
-      if (URL && URL.createObjectURL) {
-        newFile.blob = URL.createObjectURL(newFile.file)
+        // Render PDF page into canvas context
+        var renderContext = {
+          canvasContext: this.ctx,
+          viewport: viewport,
+        }
+        var renderTask = page.render(renderContext)
+
+        // Wait for rendering to finish
+        renderTask.promise.then(() => {
+          this.pageRendering = false
+          if (this.pageNumPending !== null) {
+            // New page rendering is pending
+            this.renderPage(this.pageNumPending)
+            this.pageNumPending = null
+          }
+        })
+      })
+
+      // Update page counters
+      document.getElementById('page-num').textContent = num
+    },
+    /**
+     * If another page rendering in progress, waits until the rendering is
+     * finised. Otherwise, executes rendering immediately.
+     */
+    queueRenderPage(num) {
+      if (this.pageRendering) {
+        this.pageNumPending = num
+      } else {
+        this.renderPage(num)
       }
     },
-    filesChange: async function (fieldName, fileList) {
-      console.log(fieldName)
-      console.log(fileList)
-
-      var file = fileList[0]
-      var fileReader = new FileReader()
-
-      fileReader.onload = function () {
-        var typedarray = new Uint8Array(this.result)
-        pdfjsLib.getDocument(typedarray)
-        .then(function (pdf) {
-          window.pdf = pdf
-          // you can now use *pdf* here
-          console.log("the pdf has ", pdf.numPages, "page(s).")
-          pdf.getData().then(function (data) {
-            console.log(data.length)
-            // var hash = web3.sha3('0x'+Buffer.from(data).toString('hex'))
-            // console.log('hash', hash) 
-            // web3.eth.sign(web3.eth.accounts[0], hash, console.log)
-          })
-
-          pdf.getPage(1).then(function (page) {
-            var viewport = page.getViewport(2.0)
-            console.log(viewport)
-            var canvas = document.getElementById("pdfViewer")
-            canvas.height = viewport.height
-            canvas.width = viewport.width
-            page.render({
-              canvasContext: canvas.getContext('2d'),
-              viewport: viewport
-            })
-          })
-
-        })
+    /**
+     * Displays previous page.
+     */
+    onPrevPage() {
+      if (this.pageNum <= 1) {
+        return
       }
-
-      fileReader.readAsArrayBuffer(file)
-      return
+      this.pageNum--
+      this.queueRenderPage(this.pageNum)
+    },
+    /**
+     * Displays next page.
+     */
+    onNextPage() {
+      if (this.pageNum >= this.pdfDoc.numPages) {
+        return
+      }
+      this.pageNum++
+      this.queueRenderPage(this.pageNum)
     }
   }
 }
 </script>
 
 <style>
-.example-drag label.btn {
+.drag label.btn {
   margin-bottom: 0;
   margin-right: 1rem;
 }
-.example-drag .drop-active {
+.drag .drop-active {
   top: 0;
   bottom: 0;
   right: 0;
@@ -204,15 +201,12 @@ export default {
   text-align: center;
   background: #000;
 }
-.example-drag .drop-active h3 {
+.drag .drop-active h3 {
   margin: -.5em 0 0;
   position: absolute;
   top: 50%;
   left: 0;
   right: 0;
-  -webkit-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
   font-size: 40px;
   color: #fff;
   padding: 0;
