@@ -3,15 +3,16 @@ const multer = require('multer')
 const fs = require('fs')
 const https = require('https')
 const app = express()
+var upload = multer({ dest: 'uploads/' })
 const port = 443
-const upload = multer({
-  dest: 'uploads/' // this saves your file into a directory called 'uploads'
-})
 
 app.use(express.static('dist'))
-app.post('/upload', upload.single('pdf-document'), (req, res) => {
-  res.redirect('/')
-})
+
+app.post('/upload/post', upload.single('contract'), (req, res) => {
+    console.log("got " + req.file)
+    // here we should put ipfs
+    res.redirect('/')
+  })
 
 https
   .createServer(

@@ -25,6 +25,7 @@ export default {
         }).then(page => {
           var viewport = page.getViewport(2.0)
             var canvas = document.getElementById("pdfViewer")
+            console.log(viewport)
             canvas.height = viewport.height
             canvas.width = viewport.width
 
