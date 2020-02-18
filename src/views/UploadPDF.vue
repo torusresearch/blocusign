@@ -73,6 +73,16 @@
           <i class="fa fa-stop" aria-hidden="true"></i>
           Stop Upload
         </v-btn>
+
+        <input v-on:keyup.enter="setRecipient(email)" v-model="email" placeholder="Enter recipient email e.g. hello@tor.us">
+        <v-btn
+          type="button"
+          class="btn btn-success"
+          v-on:click="setRecipient(email)"
+        >
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+        Submit
+        </v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -238,7 +248,7 @@ export default {
     /**
      * Get receipient
      */
-    getRecipient(val) {
+    setRecipient(val) {
       this.recipient = val
     } 
   }
