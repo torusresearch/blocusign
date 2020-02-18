@@ -92,7 +92,7 @@ export default {
     }
     this.sigsH = this.$route.query.sigsH ? this.$route.query.sigsH.split(",").filter(sig => sig !== "") : this.sigsH
     if (this.sigsH && this.sigsH.length > 0) {
-      this.currentStep = 4
+      this.currentStep = 3
     }
     if (this.sigsH.length > 0) {
       for (var i = 0; i < this.sigsH.length; i++) {
