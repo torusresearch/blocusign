@@ -35,8 +35,10 @@
         </file-upload>
       </v-col>
     </v-row>
-    <v-row align="center">
-      <canvas id="pdfViewer"></canvas>
+    <v-row justify="center">
+      <v-col align="center" sm="10">
+        <canvas id="pdfViewer"></canvas>
+      </v-col>
     </v-row>
     <v-row align="center">
       <v-col sm="4" align="center">
@@ -201,3 +203,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+#pdfViewer{ 
+  width: 100%;
+  height: 100%;
+}
+</style>
