@@ -351,13 +351,19 @@ export default {
         ]
       }
       console.log(signingRequest)
+
+      var signedMessage = {
+        signingRequest: signingRequest,
+        name: "REPLACE ME PLEASE"
+      }
       var personalSign = Promise.promisify(window.torus.web3.personal.sign)
       var signature = await personalSign(
-        JSON.stringify(signingRequest),
+        JSON.stringify(signedMessage),
         window.torus.web3.eth.accounts[0],
         )
-
       console.log(signature)
+      var signatureStore = signedMessage
+      signatureStore.signature = signature
 
       //submit to ipfs here
       var rawResponse = await fetch('https://blocusign.io/upload/signature-request', {
@@ -369,6 +375,17 @@ export default {
         body: JSON.stringify(signingRequest)
       })
       console.log(rawResponse)
+
+      var sigStoreResp = await fetch('https://blocusign.io/upload/signature', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(signatureStore)
+      })
+      console.log(sigStoreResp)
+
 
     },
     /**
