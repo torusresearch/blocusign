@@ -155,7 +155,7 @@ export default {
   data() {
     return {
       email: "",
-      steps: ["Upload", "Send", "Sign", "Verify"],
+      steps: ["Upload", "Choose Recipient", "Sign", "Send"],
       currentStep: 0,
       previousFileSize: 0,
       responseIPFSHash: "",
@@ -188,7 +188,7 @@ export default {
         this.responseIPFSHash = fileUpload.response
         var self = this
         if (typeof fileUpload.response === "string") {
-          self.currentStep = self.steps.indexOf("Send")
+          self.currentStep = self.steps.indexOf("Choose Recipient")
         }
         var fileReader = new FileReader()
         fileReader.onload = function() {
