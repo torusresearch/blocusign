@@ -1,28 +1,5 @@
 <template>
   <div class="about">
-        <!-- <iframe src="/Users/zhen/torus/blocusign/src/assets/sample.pdf" width="100%" height="500px" ></iframe>  -->
-        <!-- <embed src="./sample.pdf" type="application/pdf" width="600" height="500" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html"> -->
-  <!-- <pdf src="./sample.pdf"></pdf> -->
-
-  <!-- <pdf :src="pdfLink" :page="1">
-    <template slot="loading">
-      loading content here...
-    </template>
-  </pdf> -->
-
-   <!-- <file-upload
-    ref="upload"
-    v-model="files"
-    post-action="/post.method"
-    put-action="/put.method"
-    @input-file="inputFile"
-    @input-filter="inputFilter"
-  >
-  Upload file
-  </file-upload>
-  <button v-show="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true" type="button">Start upload</button>
-  <button v-show="$refs.upload && $refs.upload.active" @click.prevent="$refs.upload.active = false" type="button">Stop upload</button> -->
-
 
 <div class="example-drag">
     <div class="upload">
@@ -58,11 +35,8 @@
           :drop="true"
           :drop-directory="true"
           v-model="files"
-          :custom-action="hashAndSign"
           ref="upload"
           @input-filter="inputFilter">
-          <i class="fa fa-plus"></i>
-          Select files
         </file-upload>
         <button type="button" class="btn btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
@@ -76,90 +50,26 @@
     </div>
   </div>
 
-
-      <!-- <input type="file"  accept="application/pdf" :name="uploadFieldName" @change="filesChange($event.target.name, $event.target.files)" />
-      <canvas id="pdfViewer"></canvas> -->
   </div>
 </template>
 
 <script>
 import pdfjsLib from "pdfjs-dist"
-// import pdf from 'pdfvuer'
 import FileUpload from 'vue-upload-component'
-import pdf2base64 from 'pdf-to-base64'
-import sha256 from 'js-sha256'
+
 
 export default {
   data() {
-    var link = require('../assets/sample.pdf')
-    pdf2base64(link)
-    .then(
-        (response) => {
-            console.log("base64: " + response) //cGF0aC90by9maWxlLmpwZw==
-    var hash = sha256.create()
-   hash.update(response)
-    console.log("sha256: " + hash.hex())
-         
-        }
-    )
-    .catch(
-        (error) => {
-            console.log(error) //Exepection error....
-        }
-    )
-
-
     return {
-       pdfLink : link,
        files: []
     }
   },
   components: {
-    // pdf,
     FileUpload
   },
-  methods: {
-    /**
-     * Has changed
-     * @param  Object|undefined   newFile   Read only
-     * @param  Object|undefined   oldFile   Read only
-     * @return undefined
-     */
-    inputFile: function (newFile, oldFile) {
-      if (newFile && oldFile && !newFile.active && oldFile.active) {
-        // Get response data
-        console.log('response', newFile.response)
-        if (newFile.xhr) {
-          //  Get the response status code
-          console.log('status', newFile.xhr.status)
-        }
-      }
-    },
-    /**
-     * Pretreatment
-     * @param  Object|undefined   newFile   Read and write
-     * @param  Object|undefined   oldFile   Read only
-     * @param  Function           prevent   Prevent changing
-     * @return undefined
-     */
-    inputFilter: function (newFile, oldFile, prevent) {
-      if (newFile && !oldFile) {
-        // Filter non-image file
-        if (!/\.(pdf)$/i.test(newFile.name)) {
-          return prevent()
-        }
-      }
-
-      // Create a blob field
-      newFile.blob = ''
-      let URL = window.URL || window.webkitURL
-      if (URL && URL.createObjectURL) {
-        newFile.blob = URL.createObjectURL(newFile.file)
-      }
-    },
-    hashAndSign: async function (fileUploaderFile, component) {
-      console.log(fileUploaderFile)
-      var file = fileUploaderFile.file
+  watch: {
+    files: async function (fileUploaderFiles) {
+      var file = fileUploaderFiles[0].file
       var fileReader = new FileReader()
 
       fileReader.onload = function () {
@@ -192,7 +102,47 @@ export default {
       }
 
       fileReader.readAsArrayBuffer(file)
-      return await component.uploadHtml4(file)
+      return
+    },
+  },
+  methods: {
+    // /**
+    //  * Has changed
+    //  * @param  Object|undefined   newFile   Read only
+    //  * @param  Object|undefined   oldFile   Read only
+    //  * @return undefined
+    //  */
+    // inputFile: function (newFile, oldFile) {
+    //   if (newFile && oldFile && !newFile.active && oldFile.active) {
+    //     // Get response data
+    //     console.log('response', newFile.response)
+    //     if (newFile.xhr) {
+    //       //  Get the response status code
+    //       console.log('status', newFile.xhr.status)
+    //     }
+    //   }
+    // },
+    /**
+     * Pretreatment
+     * @param  Object|undefined   newFile   Read and write
+     * @param  Object|undefined   oldFile   Read only
+     * @param  Function           prevent   Prevent changing
+     * @return undefined
+     */
+    inputFilter: function (newFile, oldFile, prevent) {
+      if (newFile && !oldFile) {
+        // Filter non-image file
+        if (!/\.(pdf)$/i.test(newFile.name)) {
+          return prevent()
+        }
+      }
+
+      // Create a blob field
+      newFile.blob = ''
+      let URL = window.URL || window.webkitURL
+      if (URL && URL.createObjectURL) {
+        newFile.blob = URL.createObjectURL(newFile.file)
+      }
     },
     filesChange: async function (fieldName, fileList) {
       console.log(fieldName)
