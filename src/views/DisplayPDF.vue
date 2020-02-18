@@ -130,7 +130,7 @@ export default {
       })
       var url = new URL(window.location.href)
       var paramsSigsH = url.searchParams.get('sigsH')
-      if (paramsSigsH.length === 0) {
+      if (!paramsSigsH) {
         url.searchParams.add('sigsH', sigStoreResp)
       } else {
         url.searchParams.set('sigsH', paramsSigsH + "," + sigStoreResp)
