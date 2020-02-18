@@ -37,8 +37,8 @@ app.post('/upload/signature-request',bodyParser.json(), async (req, res) => {
         if (err) {
             console.log(err)
         }
-        for await (const ipfsRes of ipfs.add(globSource(req.file.path))) {
-            console.log("Submitted " + req.file.filename + " to ipfs under " + ipfsRes.cid)
+        for await (const ipfsRes of ipfs.add(globSource("uploads/"+req.body.documentHash))) {
+            console.log("Submitted signature to ipfs under " + ipfsRes.cid)
             res.status(201).send(ipfsRes.cid +"")
         }
     })
