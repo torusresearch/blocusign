@@ -27,6 +27,8 @@
           ref="upload"
         >
           <v-btn type="button"
+          name="contract"
+          extensions="pdf"
           class="btn btn-success">
             Select Files
           </v-btn>
