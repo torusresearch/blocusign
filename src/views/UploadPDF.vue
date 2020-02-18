@@ -147,7 +147,6 @@ export default {
       this.pdfDoc.getPage(num).then(page => {
         var viewport = page.getViewport({ scale: this.scale })
         this.canvas.height = viewport.height
-        console.log("WT2F")
         this.canvas.width = viewport.width
 
         // Render PDF page into canvas context
@@ -201,7 +200,17 @@ export default {
       }
       this.pageNum++
       this.queueRenderPage(this.pageNum)
-    }
+    },
+    /**
+     * Signs and request based on the hash
+     */
+    // signAndRequest() {
+    //   if (this.pageNum >= this.pdfDoc.numPages) {
+    //     return
+    //   }
+    //   this.pageNum++
+    //   this.queueRenderPage(this.pageNum)
+    // }
   }
 }
 </script>
