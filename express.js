@@ -4,7 +4,7 @@ const fs = require('fs')
 const https = require('https')
 const app = express()
 var upload = multer({ dest: 'uploads/' })
-const port = 443 || process.env.PORT
+const port =  process.env.PORT || 443
 
 app.use(express.static('dist'))
 
@@ -22,4 +22,4 @@ https
     },
     app
   )
-  .listen(port, () => console.log(`Example app listening on port ${port}!`))
+  .listen(port, () => console.log(`Server listening on port ${port}!`))
