@@ -135,7 +135,7 @@
             <v-btn
               type="button"
               class="btn btn-success"
-              v-bind:href="'mailto:'+recipient+'?subject=Signature%20Requested&body=https://blocusign.io/display?sigReqH='+responseIPFSHash"
+              v-bind:href="'mailto:'+recipient+'?subject=Signature%20Requested&body=https://blocusign.io/display?sigReqH='+sigRequestIPFSHash"
             >
               <i class="fa fa-arrow-up" aria-hidden="true"></i>
               Email
