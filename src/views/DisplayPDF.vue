@@ -18,18 +18,8 @@
       </template>
     </v-stepper>
     <v-row justify="center" align="center" wrap>
-      <v-col
-        v-for="sig in sigs"
-        :key="JSON.stringify(sig)"
-        cols="3"
-        justify="center"
-        align="center"
-      >
-        <signature
-          :sigReqH="sigReqH"
-          :sigmeta="getSigMetadata(sig)"
-          :sig="sig"
-        ></signature>
+      <v-col v-for="sig in sigs" :key="JSON.stringify(sig)" cols="3" justify="center" align="center">
+        <signature :sigReqH="sigReqH" :sigmeta="getSigMetadata(sig)" :sig="sig"></signature>
       </v-col>
     </v-row>
     <v-row id="input-banner" justify="center" align="center" wrap>
@@ -39,7 +29,7 @@
             mdi-draw
           </v-icon>
         </v-avatar>
-        <v-text-field v-model="name"></v-text-field>
+        <v-text-field v-model="name" placeholder="Enter Name Here"></v-text-field>
         <template v-slot:actions>
           <v-btn type="button" class="btn btn-success" v-on:click="signPDF()">
             <i class="fa fa-arrow-up" aria-hidden="true"></i>
@@ -68,22 +58,22 @@
   </v-container>
 </template>
 <script>
-import * as Promise from "bluebird"
-import Signature from "../components/Signature.vue"
-import pdfjsLib from "pdfjs-dist"
+import * as Promise from 'bluebird'
+import Signature from '../components/Signature.vue'
+import pdfjsLib from 'pdfjs-dist'
 export default {
   data() {
     return {
-      steps: ["Upload", "Choose Recipient", "Send", "Sign", "Verify"],
+      steps: ['Upload', 'Choose Recipient', 'Send', 'Sign', 'Verify'],
       currentStep: 3,
-      pdfH: "",
-      pdfURL: "",
+      pdfH: '',
+      pdfURL: '',
       initialLoad: false,
-      verifier: "facebook",
-      verifierid: "23423231",
-      name: "Enter Name Here",
+      verifier: 'facebook',
+      verifierid: '23423231',
+      name: '',
       sigReq: {},
-      sigReqH: "",
+      sigReqH: '',
       sigs: [],
       sigsH: [],
       pdfDoc: null,
@@ -109,13 +99,13 @@ export default {
         window.ethereum.enable()
       }
     }, 50)
-    this.canvas = document.getElementById("pdfViewer")
-    this.ctx = this.canvas.getContext("2d")
+    this.canvas = document.getElementById('pdfViewer')
+    this.ctx = this.canvas.getContext('2d')
     this.sigReqH = this.$route.query.sigReqH || this.sigReqH
     window.disp = this
-    if (this.sigReqH !== "") {
+    if (this.sigReqH !== '') {
       var self = this
-      fetch("https://ipfs.io/ipfs/" + this.sigReqH)
+      fetch('https://ipfs.io/ipfs/' + this.sigReqH)
         .then(resp => resp.json())
         .then(json => {
           self.sigReq = json
@@ -124,16 +114,14 @@ export default {
           }
         })
     }
-    this.sigsH = this.$route.query.sigsH
-      ? this.$route.query.sigsH.split(",").filter(sig => sig)
-      : this.sigsH
+    this.sigsH = this.$route.query.sigsH ? this.$route.query.sigsH.split(',').filter(sig => sig) : this.sigsH
     if (this.sigsH && this.sigsH.length > 0) {
       this.currentStep = 4
     }
     if (this.sigsH.length > 0) {
       for (var i = 0; i < this.sigsH.length; i++) {
         (function(i) {
-          fetch("https://ipfs.io/ipfs/" + self.sigsH[i])
+          fetch('https://ipfs.io/ipfs/' + self.sigsH[i])
             .then(resp => resp.json())
             .then(json => {
               self.sigs[i] = json
@@ -146,7 +134,7 @@ export default {
     pdfH: {
       handler(pdfH) {
         var self = this
-        fetch("https://ipfs.io/ipfs/" + pdfH)
+        fetch('https://ipfs.io/ipfs/' + pdfH)
           .then(resp => resp.blob())
           .then(blob => {
             self.pdfURL = URL.createObjectURL(blob)
@@ -158,7 +146,7 @@ export default {
         var self = this
         pdfjsLib.getDocument(pdfURL).then(pdf => {
           self.updatePDF(pdf)
-          console.log("the pdf has ", pdf.numPages, "page(s).")
+          console.log('the pdf has ', pdf.numPages, 'page(s).')
           self.renderPage(self.pageNum, true)
         })
       }
@@ -172,36 +160,30 @@ export default {
         address: window.web3.eth.accounts[0]
       }
       var personalSign = Promise.promisify(window.torus.web3.personal.sign)
-      var signature = await personalSign(
-        JSON.stringify(signedMessage),
-        window.torus.web3.eth.accounts[0]
-      )
+      var signature = await personalSign(JSON.stringify(signedMessage), window.torus.web3.eth.accounts[0])
       console.log(signature)
       var signatureStore = signedMessage
       signatureStore.signature = signature
 
-      var sigStoreResp = await fetch("https://blocusign.io/upload/signature", {
-        method: "POST",
+      var sigStoreResp = await fetch('https://blocusign.io/upload/signature', {
+        method: 'POST',
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(signatureStore)
       }).then(resp => resp.text())
       var url = new URL(window.location.href)
-      var paramsSigsH = url.searchParams.get("sigsH")
+      var paramsSigsH = url.searchParams.get('sigsH')
       if (!paramsSigsH) {
-        url.searchParams.set("sigsH", sigStoreResp)
+        url.searchParams.set('sigsH', sigStoreResp)
       } else {
-        url.searchParams.set("sigsH", paramsSigsH + "," + sigStoreResp)
+        url.searchParams.set('sigsH', paramsSigsH + ',' + sigStoreResp)
       }
       window.location.href = url.toString()
     },
     getSigMetadata(sig) {
-      if (
-        this.sigReq.recipients === undefined ||
-        this.sigReq.recipients.length === 0
-      ) {
+      if (this.sigReq.recipients === undefined || this.sigReq.recipients.length === 0) {
         return {}
       }
       if (!sig.address) {
@@ -255,7 +237,7 @@ export default {
       })
 
       // Update page counters
-      document.getElementById("page-num").textContent = num
+      document.getElementById('page-num').textContent = num
     },
     /**
      * If another page rendering in progress, waits until the rendering is

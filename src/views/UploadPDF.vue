@@ -1,5 +1,5 @@
 <template>
-<!-- <v-container fill-height>  https://github.com/vuetifyjs/vuetify/issues/8608 -->
+  <!-- <v-container fill-height>  https://github.com/vuetifyjs/vuetify/issues/8608 -->
   <v-container fluid class="about">
     <v-stepper>
       <template>
@@ -21,7 +21,8 @@
     <v-row justify="center" class="upload">
       <template v-if="files.length">
         <v-col cols="12" v-for="file in files" :key="file.id" align="center">
-          <span>{{ file.name }}</span><span v-if="responseIPFSHash.length>3">- {{ responseIPFSHash }} -</span> 
+          <span>{{ file.name }}</span>
+          <span v-if="responseIPFSHash.length > 3">- {{ responseIPFSHash }} -</span>
           <span v-if="file.error">{{ file.error }}</span>
           <v-icon v-if="file.error" medium>mdi-alert-circle</v-icon>
           <v-icon v-else-if="file.success" medium>mdi-check-circle</v-icon>
@@ -49,10 +50,7 @@
           extensions="pdf"
         >
           <v-btn
-            v-if="
-              typeof responseIPFSHash === 'string' &&
-                responseIPFSHash.length === 0
-            "
+            v-if="typeof responseIPFSHash === 'string' && responseIPFSHash.length === 0"
             type="button"
             name="contract"
             extensions="pdf"
@@ -65,22 +63,12 @@
     </v-row>
     <v-row class="upload" v-if="files.length > 0 && this.currentStep === 0">
       <v-col align="center" cols="12">
-        <v-btn
-          type="button"
-          class="btn btn-success"
-          v-if="!$refs.upload || !$refs.upload.active"
-          @click.prevent="$refs.upload.active = true"
-        >
+        <v-btn type="button" class="btn btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
           Upload
           <v-icon right>mdi-cloud-upload-outline</v-icon>
         </v-btn>
-        <v-btn
-          type="button"
-          class="btn btn-danger"
-          v-else
-          @click.prevent="$refs.upload.active = false"
-        >
+        <v-btn type="button" class="btn btn-danger" v-else @click.prevent="$refs.upload.active = false">
           Stop Upload
         </v-btn>
       </v-col>
@@ -89,7 +77,10 @@
       <v-col cols="4" align="center">
         <v-text-field
           align="center"
-          v-on:keyup.enter="setRecipient(email);signatureRequest()"
+          v-on:keyup.enter="
+            setRecipient(email)
+            signatureRequest()
+          "
           v-model="email"
           placeholder="Enter recipient email e.g. hello@tor.us"
         />
@@ -99,7 +90,10 @@
           align="center"
           type="button"
           class="btn btn-success"
-          v-on:click="setRecipient(email);signatureRequest()"
+          v-on:click="
+            setRecipient(email)
+            signatureRequest()
+          "
         >
           Next
           <v-icon right>mdi-skip-next</v-icon>
@@ -107,45 +101,38 @@
       </v-col>
     </v-row>
     <v-row justify="center" align="center" wrap v-if="currentStep === 2">
-         <v-banner single-line >
-          <v-avatar
-            slot="icon"
-            color="primary"
-            size="36"
+      <v-banner single-line>
+        <v-avatar slot="icon" color="primary" size="36">
+          <v-icon icon="mdi-lock" color="white">
+            mdi-draw
+          </v-icon>
+        </v-avatar>
+        {{ 'https://blocusign.io/display?sigReqH=' + sigRequestIPFSHash }}
+        <input type="hidden" id="sign-link" :value="'https://blocusign.io/display?sigReqH=' + sigRequestIPFSHash" />
+        <template v-slot:actions>
+          <v-btn type="button" class="btn btn-success" v-on:click="copyLink()">
+            <i class="fa fa-arrow-up" aria-hidden="true"></i>
+            Copy
+            <v-icon right>mdi-content-copy</v-icon>
+          </v-btn>
+          <v-btn
+            type="button"
+            class="btn btn-success"
+            v-bind:href="
+              'mailto:' +
+                recipient +
+                '?subject=Signature%20requested&body=Please%20head%20over%20to%20https://blocusign.io/display?sigReqH=' +
+                sigRequestIPFSHash
+            "
           >
-            <v-icon
-              icon="mdi-lock"
-              color="white"
-            >
-              mdi-draw
-            </v-icon>
-          </v-avatar>
-          {{"https://blocusign.io/display?sigReqH="+sigRequestIPFSHash}}
-          <input type="hidden" id="sign-link" :value="'https://blocusign.io/display?sigReqH='+sigRequestIPFSHash">
-          <template v-slot:actions>
-             <v-btn
-              type="button"
-              class="btn btn-success"
-              v-on:click="copyLink()"
-            >
-              <i class="fa fa-arrow-up" aria-hidden="true"></i>
-              Copy
-              <v-icon right>mdi-content-copy</v-icon>
-            </v-btn>
-            <v-btn
-              type="button"
-              class="btn btn-success"
-              v-bind:href="'mailto:'+recipient+'?subject=Signature%20requested&body=Please%20head%20over%20to%20https://blocusign.io/display?sigReqH='+sigRequestIPFSHash"
-            >
-              <i class="fa fa-arrow-up" aria-hidden="true"></i>
-              Email
-              <v-icon right>mdi-email-outline</v-icon>
-            </v-btn>
-          </template>
-        </v-banner>
-
+            <i class="fa fa-arrow-up" aria-hidden="true"></i>
+            Email
+            <v-icon right>mdi-email-outline</v-icon>
+          </v-btn>
+        </template>
+      </v-banner>
     </v-row>
-    <v-row justify="center" align="center" v-if="(currentStep === 0)">
+    <v-row justify="center" align="center" v-if="currentStep === 0">
       <v-col align="center" cols="10">
         <canvas id="pdfViewer"></canvas>
       </v-col>
@@ -155,29 +142,29 @@
         <v-btn :hidden="files.length === 0" v-on:click="prevPage()">&lt;</v-btn>
       </v-col>
       <v-col cols="4" align="center">
-        <h4 id="page-num" :hidden="files.length === 0">{{pageNum}}</h4>
+        <h4 id="page-num" :hidden="files.length === 0">{{ pageNum }}</h4>
       </v-col>
       <v-col cols="4" align="center">
         <v-btn :hidden="files.length === 0" v-on:click="nextPage()">&gt;</v-btn>
       </v-col>
     </v-row>
   </v-container>
-   <!-- </v-container> -->
+  <!-- </v-container> -->
 </template>
 
 <script>
-import pdfjsLib from "pdfjs-dist"
-import FileUpload from "vue-upload-component"
+import pdfjsLib from 'pdfjs-dist'
+import FileUpload from 'vue-upload-component'
 
 export default {
   data() {
     return {
-      email: "",
-      steps: ["Upload", "Choose Recipient", "Send", "Sign", "Verify"],
+      email: '',
+      steps: ['Upload', 'Choose Recipient', 'Send', 'Sign', 'Verify'],
       currentStep: 0,
       previousFileSize: 0,
-      responseIPFSHash: "",
-      sigRequestIPFSHash:"",
+      responseIPFSHash: '',
+      sigRequestIPFSHash: '',
       files: [],
       pdfDoc: null,
       pageNum: 1,
@@ -186,7 +173,7 @@ export default {
       scale: 1.0,
       canvas: null,
       ctx: null,
-      recipient: ""
+      recipient: ''
     }
   },
   components: {
@@ -203,8 +190,8 @@ export default {
         window.ethereum.enable()
       }
     }, 50)
-    this.canvas = document.getElementById("pdfViewer")
-    this.ctx = this.canvas.getContext("2d")
+    this.canvas = document.getElementById('pdfViewer')
+    this.ctx = this.canvas.getContext('2d')
   },
   watch: {
     files: {
@@ -216,15 +203,15 @@ export default {
         var file = fileUpload.file
         this.responseIPFSHash = fileUpload.response
         var self = this
-        if (typeof fileUpload.response === "string") {
-          self.currentStep = self.steps.indexOf("Choose Recipient")
+        if (typeof fileUpload.response === 'string') {
+          self.currentStep = self.steps.indexOf('Choose Recipient')
         }
         var fileReader = new FileReader()
         fileReader.onload = function() {
           var typedarray = new Uint8Array(this.result)
           pdfjsLib.getDocument(typedarray).then(pdf => {
             self.updatePDF(pdf)
-            console.log("the pdf has ", pdf.numPages, "page(s).")
+            console.log('the pdf has ', pdf.numPages, 'page(s).')
             // pdf.getData().then((data) => {
             //   console.log(data.length)
             //   // var hash = web3.sha3('0x'+Buffer.from(data).toString('hex'))
@@ -282,7 +269,7 @@ export default {
       })
 
       // Update page counters
-      document.getElementById("page-num").textContent = num
+      document.getElementById('page-num').textContent = num
     },
     /**
      * If another page rendering in progress, waits until the rendering is
@@ -319,25 +306,25 @@ export default {
      * Signs and request based on the hash
      */
     signatureRequest: async function() {
-      console.log("this is ", this)
+      console.log('this is ', this)
       // validation checks
-      if (this.responseIPFSHash == "") {
-        console.log("error, cant sign and request, no responseIPFSHash")
+      if (this.responseIPFSHash == '') {
+        console.log('error, cant sign and request, no responseIPFSHash')
         return
       }
 
-      if (this.recipient == "") {
-        console.log("error, cant sign and request, no recipeient")
+      if (this.recipient == '') {
+        console.log('error, cant sign and request, no recipeient')
         return
       }
 
       // get sender details
       var myHeaders = new Headers()
       var senderInfo = await window.torus.getUserInfo()
-      myHeaders.append("Content-Type", "application/json")
+      myHeaders.append('Content-Type', 'application/json')
       var raw = JSON.stringify({
-        jsonrpc: "2.0",
-        method: "VerifierLookupRequest",
+        jsonrpc: '2.0',
+        method: 'VerifierLookupRequest',
         id: 10,
         params: {
           verifier: senderInfo.verifier,
@@ -345,39 +332,33 @@ export default {
         }
       })
       var requestOptions = {
-        method: "POST",
+        method: 'POST',
         headers: myHeaders,
         body: raw,
-        redirect: "follow"
+        redirect: 'follow'
       }
-      var response = await fetch(
-        "https://torus-18.torusnode.com/jrpc",
-        requestOptions
-      )
+      var response = await fetch('https://torus-18.torusnode.com/jrpc', requestOptions)
       var jsonText = await response.text()
       var senderDetails = JSON.parse(jsonText)
 
       // get recipient details
       await window.torus.getPublicAddress({
-        verifier: "google",
+        verifier: 'google',
         verifierId: this.recipient
       })
       var raw2 = JSON.stringify({
-        jsonrpc: "2.0",
-        method: "VerifierLookupRequest",
+        jsonrpc: '2.0',
+        method: 'VerifierLookupRequest',
         id: 10,
-        params: { verifier: "google", verifier_id: this.recipient }
+        params: { verifier: 'google', verifier_id: this.recipient }
       })
       var requestOptions2 = {
-        method: "POST",
+        method: 'POST',
         headers: myHeaders,
         body: raw2,
-        redirect: "follow"
+        redirect: 'follow'
       }
-      var response2 = await fetch(
-        "https://torus-18.torusnode.com/jrpc",
-        requestOptions2
-      )
+      var response2 = await fetch('https://torus-18.torusnode.com/jrpc', requestOptions2)
       var jsonText2 = await response2.text()
       var recipientDetails = JSON.parse(jsonText2)
       // create signing request object
@@ -393,19 +374,17 @@ export default {
           {
             address: recipientDetails.result.keys[0].address,
             verifierId: this.recipient,
-            verifier: "google"
+            verifier: 'google'
           }
         ]
       }
       console.log(signatureRequest)
 
-
-
       //submit to ipfs here
       var rawResponse = await fetch('https://blocusign.io/upload/signature-request', {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(signatureRequest)
@@ -419,11 +398,11 @@ export default {
      */
     setRecipient(val) {
       this.recipient = val
-      this.currentStep = this.steps.indexOf("Send")
+      this.currentStep = this.steps.indexOf('Send')
     },
-    copyLink () {
+    copyLink() {
       let testingCodeToCopy = document.querySelector('#sign-link')
-      testingCodeToCopy.setAttribute('type', 'text')    
+      testingCodeToCopy.setAttribute('type', 'text')
       testingCodeToCopy.select()
 
       try {

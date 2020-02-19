@@ -1,18 +1,18 @@
-const fs = require("fs")
+const fs = require('fs')
 
 module.exports = {
   devServer: {
     https: {
-      key: fs.readFileSync("./ssl/server.key"),
-      cert: fs.readFileSync("./ssl/server.crt")
+      key: fs.readFileSync('./ssl/server.key'),
+      cert: fs.readFileSync('./ssl/server.crt')
     }
   },
   chainWebpack: config => {
     config.module
-      .rule("pdf")
+      .rule('pdf')
       .test(/\.pdf$/)
-      .use("file-loader")
-      .loader("file-loader")
+      .use('file-loader')
+      .loader('file-loader')
   },
-  transpileDependencies: ["vuetify"]
+  transpileDependencies: ['vuetify']
 }

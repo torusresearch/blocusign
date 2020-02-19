@@ -1,0 +1,69 @@
+{
+  "editor.formatOnSave": false,
+  "eslint.autoFixOnSave": true,
+  "eslint.options": {
+    "env": {
+      "browser": true,
+      "es6": true,
+      "node": true
+    },
+    "extends": ["@vue/standard", "plugin:vue/essential", "prettier"],
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "parser": "babel-eslint"
+    },
+    "plugins": ["prettier", "vue"],
+    "rules": {
+      "import/prefer-default-export": 0,
+      "jsx-a11y/label-has-for": 0,
+      "linebreak-style": 0,
+      "max-len": [
+        2,
+        {
+          "code": 150
+        }
+      ],
+      "no-confusing-arrow": 0,
+      "no-console": 0,
+      "no-nested-ternary": 0,
+      "no-param-reassign": [
+        "error",
+        {
+          "props": false
+        }
+      ],
+      "prettier/prettier": [
+        "error",
+        {
+          "printWidth": 150,
+          "semi": false,
+          "singleQuote": true,
+          "htmlWhitespaceSensitivity": "ignore"
+        }
+      ],
+      "quotes": [2, "single"],
+      "react/jsx-filename-extension": 0
+    }
+  },
+  "eslint.lintTask.enable": true,
+  "eslint.format.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    {
+      "autoFix": true,
+      "language": "vue"
+    }
+  ],
+  "eslint.workingDirectories": [
+    {
+      "changeProcessCWD": true,
+      "directory": "./app"
+    }
+  ],
+  "prettier.jsxBracketSameLine": true,
+  "prettier.printWidth": 150,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
+}
