@@ -120,8 +120,8 @@
               mdi-draw
             </v-icon>
           </v-avatar>
-          {{"https://blocusign.io/display?sigReqH="+responseIPFSHash}}
-          <input type="hidden" id="sign-link" :value="'https://blocusign.io/display?sigReqH='+responseIPFSHash">
+          {{"https://blocusign.io/display?sigReqH="+sigRequestIPFSHash}}
+          <input type="hidden" id="sign-link" :value="'https://blocusign.io/display?sigReqH='+sigRequestIPFSHash">
           <template v-slot:actions>
              <v-btn
               type="button"
@@ -177,6 +177,7 @@ export default {
       currentStep: 0,
       previousFileSize: 0,
       responseIPFSHash: "",
+      sigRequestIPFSHash:"",
       files: [],
       pdfDoc: null,
       pageNum: 1,
@@ -401,6 +402,7 @@ export default {
       })
       var sigRequestHash = await rawResponse.text()
       console.log(sigRequestHash)
+      this.sigRequestIPFSHash = sigRequestHash
     },
     /**
      * Get receipient
