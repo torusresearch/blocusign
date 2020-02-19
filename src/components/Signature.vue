@@ -119,7 +119,7 @@ export default {
   font-size: 20px;
 }
 #small-text {
-  font-size: 10px;
+  font-size: 8px;
 }
 .no-margin-padding {
   margin: 0 0 0 0;
