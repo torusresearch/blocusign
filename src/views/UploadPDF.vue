@@ -89,7 +89,7 @@
       <v-col cols="4" align="center">
         <v-text-field
           align="center"
-          v-on:keyup.enter="setRecipient(email)"
+          v-on:keyup.enter="setRecipient(email);signatureRequest()"
           v-model="email"
           placeholder="Enter recipient email e.g. hello@tor.us"
         />
@@ -99,7 +99,7 @@
           align="center"
           type="button"
           class="btn btn-success"
-          v-on:click="setRecipient(email)"
+          v-on:click="setRecipient(email);signatureRequest()"
         >
           Next
           <v-icon right>mdi-skip-next</v-icon>
@@ -135,7 +135,7 @@
             <v-btn
               type="button"
               class="btn btn-success"
-              v-bind:href="'mailto:'+recipient+'?subject=Signature%20Requested&body=https://blocusign.io/display?sigReqH='+responseIPFSHash"
+              v-bind:href="'mailto:'+recipient+'?subject=Signature%20Requested&body=https://blocusign.io/display?sigReqH='+sigRequestIPFSHash"
             >
               <i class="fa fa-arrow-up" aria-hidden="true"></i>
               Email
