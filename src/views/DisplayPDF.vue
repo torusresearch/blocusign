@@ -23,7 +23,7 @@
       </v-col>
     </v-row>
     <v-row justify="center" align="center" wrap >
-      <v-banner single-line v-model="name">
+      <v-banner single-line id="input-banner">
           <v-avatar
             slot="icon"
             color="primary"
@@ -290,5 +290,8 @@ export default {
 #pdfViewer {
   width: 100%;
   height: 100%;
+}
+#input-banner {
+  margin: 6px;
 }
 </style>
