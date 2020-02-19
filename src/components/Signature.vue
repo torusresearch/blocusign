@@ -38,9 +38,9 @@ export default {
     return {
       textSignature: null,
       image: null,
-      name: "hihi",
+      name: "anonymous",
       verifier: "google",
-      verifierid: "leonard@tor.us",
+      verifierid: "unverified",
       invalid: false,
       validated: false,
     }
@@ -54,7 +54,6 @@ export default {
     sigReqH: String // trusted, from sigreq
   },
   mounted() {
-    console.log('MOUNTED RENDERING', JSON.stringify(this.sigmeta), JSON.stringify(this.sig))
     // verify sig is correct
         this.name = this.sig.name
         if (Object.keys(this.sigmeta).length === 0) {
@@ -120,7 +119,7 @@ export default {
   font-size: 20px;
 }
 #small-text {
-  font-size: 12px;
+  font-size: 10px;
 }
 .no-margin-padding {
   margin: 0 0 0 0;
