@@ -22,9 +22,34 @@
         <signature :sigReqH="sigReqH" :sigmeta="getSigMetadata(sig)" :sig="sig"></signature>
       </v-col>
     </v-row>
-    <v-row justify="center" align="center" wrap>
-      <v-text-field v-model="name"></v-text-field>
-      <v-btn v-on:click="signPDF()">Sign</v-btn>
+    <v-row justify="center" align="center" wrap >
+      <v-banner single-line v-model="name">
+          <v-avatar
+            slot="icon"
+            color="primary"
+            size="36"
+          >
+            <v-icon
+              icon="mdi-lock"
+              color="white"
+            >
+              mdi-draw
+            </v-icon>
+          </v-avatar>
+              <v-text-field v-model="name"></v-text-field>
+          <input type="hidden" id="sign-link" :value="'https://blocusign.io/display?sigReqH='+sigRequestIPFSHash">
+          <template v-slot:actions>
+             <v-btn
+              type="button"
+              class="btn btn-success"
+              v-on:click="signPDF()"
+            >
+              <i class="fa fa-arrow-up" aria-hidden="true"></i>
+              Sign
+              <v-icon right>mdi-content-copy</v-icon>
+            </v-btn>
+          </template>
+        </v-banner>
     </v-row> 
     <v-row justify="center" align="center" wrap>
       <v-col align="center" cols="10">
@@ -58,7 +83,7 @@ export default {
       initialLoad: false,
       verifier: "facebook",
       verifierid: "23423231",
-      name: "Anonymous",
+      name: "Enter Name Here",
       sigReq: {},
       sigReqH: "",
       sigs: [],
