@@ -1,5 +1,8 @@
 <template>
-  <img class="logo" :class="{'invalid': invalid}" :src="require(`../../public/img/logos/${verifier}.svg`)" />
+  <div>
+    <img  v-if="!invalid" class="logo" :src="require(`../../public/img/logos/${verifier}.svg`)" />
+    <img v-else class="invalid logo" :src="require('../../public/img/icons/cross.png')" />
+  </div>
 </template>
 
 <script>
@@ -12,7 +15,7 @@ export default {
 </script>
 
 <style scoped>
-.logo.invalid {
+.invalid.logo {
   filter: grayscale(100%);
 }
 .logo {

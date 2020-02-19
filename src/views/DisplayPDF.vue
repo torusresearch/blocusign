@@ -52,7 +52,7 @@ export default {
   data() {
     return {
       steps: ["Upload", "Choose Recipient", "Send", "Sign", "Verify"],
-      currentStep: 2,
+      currentStep: 3,
       pdfH: '',
       pdfURL: '',
       initialLoad: false,
@@ -62,7 +62,7 @@ export default {
       sigReq: {},
       sigReqH: "",
       sigs: [],
-      sigsH: [""],
+      sigsH: [],
       pdfDoc: null,
       pageNum: 1,
       pageRendering: false,
@@ -76,10 +76,10 @@ export default {
     signature: Signature,
   },
   mounted() {
-    window.FF = this
     this.canvas = document.getElementById("pdfViewer")
     this.ctx = this.canvas.getContext("2d")
     this.sigReqH = this.$route.query.sigReqH || this.sigReqH
+    window.disp = this
     if (this.sigReqH !== "") {
       var self = this
       fetch("https://ipfs.io/ipfs/" + this.sigReqH).then(resp => resp.json())
@@ -90,7 +90,7 @@ export default {
         }
       })
     }
-    this.sigsH = this.$route.query.sigsH ? this.$route.query.sigsH.split(",").filter(sig => sig !== "") : this.sigsH
+    this.sigsH = this.$route.query.sigsH ? this.$route.query.sigsH.split(",").filter(sig => sig) : this.sigsH
     if (this.sigsH && this.sigsH.length > 0) {
       this.currentStep = 4
     }
