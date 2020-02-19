@@ -22,8 +22,8 @@
         <signature :sigReqH="sigReqH" :sigmeta="getSigMetadata(sig)" :sig="sig"></signature>
       </v-col>
     </v-row>
-    <v-row justify="center" align="center" wrap >
-      <v-banner single-line id="input-banner">
+    <v-row id="input-banner" justify="center" align="center" wrap >
+      <v-banner single-line >
           <v-avatar
             slot="icon"
             color="primary"
@@ -292,6 +292,6 @@ export default {
   height: 100%;
 }
 #input-banner {
-  margin: 6px;
+  padding: 10px;
 }
 </style>
