@@ -89,7 +89,7 @@
       <v-col cols="4" align="center">
         <v-text-field
           align="center"
-          v-on:keyup.enter="setRecipient(email)"
+          v-on:keyup.enter="setRecipient(email);signatureRequest()"
           v-model="email"
           placeholder="Enter recipient email e.g. hello@tor.us"
         />
