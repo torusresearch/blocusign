@@ -79,6 +79,7 @@ https
   .listen(port, () => console.log(`Server listening on port ${port}!`))
 
 if (port === 443) {
+  console.log('Server also listening on 80')
   http.createServer(app).listen(80)
 }
 
