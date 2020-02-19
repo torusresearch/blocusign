@@ -18,39 +18,37 @@
       </template>
     </v-stepper>
     <v-row justify="center" align="center" wrap>
-      <v-col v-for="sig in sigs" :key="JSON.stringify(sig)" cols="3" justify="center" align="center">
-        <signature :sigReqH="sigReqH" :sigmeta="getSigMetadata(sig)" :sig="sig"></signature>
+      <v-col
+        v-for="sig in sigs"
+        :key="JSON.stringify(sig)"
+        cols="3"
+        justify="center"
+        align="center"
+      >
+        <signature
+          :sigReqH="sigReqH"
+          :sigmeta="getSigMetadata(sig)"
+          :sig="sig"
+        ></signature>
       </v-col>
     </v-row>
-    <v-row id="input-banner" justify="center" align="center" wrap >
-      <v-banner single-line >
-          <v-avatar
-            slot="icon"
-            color="primary"
-            size="36"
-          >
-            <v-icon
-              icon="mdi-lock"
-              color="white"
-            >
-              mdi-draw
-            </v-icon>
-          </v-avatar>
-              <v-text-field v-model="name"></v-text-field>
-          <input type="hidden" id="sign-link" :value="'https://blocusign.io/display?sigReqH='+sigRequestIPFSHash">
-          <template v-slot:actions>
-             <v-btn
-              type="button"
-              class="btn btn-success"
-              v-on:click="signPDF()"
-            >
-              <i class="fa fa-arrow-up" aria-hidden="true"></i>
-              Sign
-              <v-icon right>mdi-content-copy</v-icon>
-            </v-btn>
-          </template>
-        </v-banner>
-    </v-row> 
+    <v-row id="input-banner" justify="center" align="center" wrap>
+      <v-banner single-line>
+        <v-avatar slot="icon" color="primary" size="36">
+          <v-icon icon="mdi-lock" color="white">
+            mdi-draw
+          </v-icon>
+        </v-avatar>
+        <v-text-field v-model="name"></v-text-field>
+        <template v-slot:actions>
+          <v-btn type="button" class="btn btn-success" v-on:click="signPDF()">
+            <i class="fa fa-arrow-up" aria-hidden="true"></i>
+            Sign
+            <v-icon right>mdi-content-copy</v-icon>
+          </v-btn>
+        </template>
+      </v-banner>
+    </v-row>
     <v-row justify="center" align="center" wrap>
       <v-col align="center" cols="10">
         <canvas id="pdfViewer"></canvas>
@@ -58,10 +56,10 @@
     </v-row>
     <v-row align="center" justify="center" wrap>
       <v-col cols="4" justify="center" align="center">
-        <v-btn :hidden="!initialLoad"  v-on:click="prevPage()">&lt;</v-btn>
+        <v-btn :hidden="!initialLoad" v-on:click="prevPage()">&lt;</v-btn>
       </v-col>
       <v-col cols="4" justify="center" align="center">
-        <h4 :hidden="!initialLoad"  id="page-num" >{{pageNum}}</h4>
+        <h4 :hidden="!initialLoad" id="page-num">{{ pageNum }}</h4>
       </v-col>
       <v-col cols="4" justify="center" align="center">
         <v-btn :hidden="!initialLoad" v-on:click="nextPage()">&gt;</v-btn>
@@ -71,15 +69,15 @@
 </template>
 <script>
 import * as Promise from "bluebird"
-import Signature from '../components/Signature.vue'
+import Signature from "../components/Signature.vue"
 import pdfjsLib from "pdfjs-dist"
 export default {
   data() {
     return {
       steps: ["Upload", "Choose Recipient", "Send", "Sign", "Verify"],
       currentStep: 3,
-      pdfH: '',
-      pdfURL: '',
+      pdfH: "",
+      pdfURL: "",
       initialLoad: false,
       verifier: "facebook",
       verifierid: "23423231",
@@ -94,11 +92,11 @@ export default {
       pageNumPending: null,
       scale: 1.0,
       canvas: null,
-      ctx: null,
+      ctx: null
     }
   },
   components: {
-    signature: Signature,
+    signature: Signature
   },
   mounted() {
     var interval = setInterval(function() {
@@ -117,25 +115,29 @@ export default {
     window.disp = this
     if (this.sigReqH !== "") {
       var self = this
-      fetch("https://ipfs.io/ipfs/" + this.sigReqH).then(resp => resp.json())
-      .then(json => {
-        self.sigReq = json
-        if (json.documentHash) {
-          self.pdfH = json.documentHash
-        }
-      })
+      fetch("https://ipfs.io/ipfs/" + this.sigReqH)
+        .then(resp => resp.json())
+        .then(json => {
+          self.sigReq = json
+          if (json.documentHash) {
+            self.pdfH = json.documentHash
+          }
+        })
     }
-    this.sigsH = this.$route.query.sigsH ? this.$route.query.sigsH.split(",").filter(sig => sig) : this.sigsH
+    this.sigsH = this.$route.query.sigsH
+      ? this.$route.query.sigsH.split(",").filter(sig => sig)
+      : this.sigsH
     if (this.sigsH && this.sigsH.length > 0) {
       this.currentStep = 4
     }
     if (this.sigsH.length > 0) {
       for (var i = 0; i < this.sigsH.length; i++) {
         (function(i) {
-          fetch("https://ipfs.io/ipfs/" + self.sigsH[i]).then(resp => resp.json())
-          .then(json => {
-            self.sigs[i] = json
-          })
+          fetch("https://ipfs.io/ipfs/" + self.sigsH[i])
+            .then(resp => resp.json())
+            .then(json => {
+              self.sigs[i] = json
+            })
         })(i)
       }
     }
@@ -144,20 +146,21 @@ export default {
     pdfH: {
       handler(pdfH) {
         var self = this
-        fetch("https://ipfs.io/ipfs/" + pdfH).then(resp => resp.blob())
-        .then(blob => {
-          self.pdfURL = URL.createObjectURL(blob)
-        })
+        fetch("https://ipfs.io/ipfs/" + pdfH)
+          .then(resp => resp.blob())
+          .then(blob => {
+            self.pdfURL = URL.createObjectURL(blob)
+          })
       }
     },
     pdfURL: {
       handler(pdfURL) {
         var self = this
         pdfjsLib.getDocument(pdfURL).then(pdf => {
-            self.updatePDF(pdf)
-            console.log("the pdf has ", pdf.numPages, "page(s).")
-            self.renderPage(self.pageNum, true)
-          })
+          self.updatePDF(pdf)
+          console.log("the pdf has ", pdf.numPages, "page(s).")
+          self.renderPage(self.pageNum, true)
+        })
       }
     }
   },
@@ -171,31 +174,34 @@ export default {
       var personalSign = Promise.promisify(window.torus.web3.personal.sign)
       var signature = await personalSign(
         JSON.stringify(signedMessage),
-        window.torus.web3.eth.accounts[0],
-        )
+        window.torus.web3.eth.accounts[0]
+      )
       console.log(signature)
       var signatureStore = signedMessage
       signatureStore.signature = signature
 
-      var sigStoreResp = await fetch('https://blocusign.io/upload/signature', {
-        method: 'POST',
+      var sigStoreResp = await fetch("https://blocusign.io/upload/signature", {
+        method: "POST",
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          Accept: "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(signatureStore)
       }).then(resp => resp.text())
       var url = new URL(window.location.href)
-      var paramsSigsH = url.searchParams.get('sigsH')
+      var paramsSigsH = url.searchParams.get("sigsH")
       if (!paramsSigsH) {
-        url.searchParams.set('sigsH', sigStoreResp)
+        url.searchParams.set("sigsH", sigStoreResp)
       } else {
-        url.searchParams.set('sigsH', paramsSigsH + "," + sigStoreResp)
+        url.searchParams.set("sigsH", paramsSigsH + "," + sigStoreResp)
       }
-      window.location.href= url.toString()
+      window.location.href = url.toString()
     },
     getSigMetadata(sig) {
-      if (this.sigReq.recipients === undefined || this.sigReq.recipients.length === 0) {
+      if (
+        this.sigReq.recipients === undefined ||
+        this.sigReq.recipients.length === 0
+      ) {
         return {}
       }
       if (!sig.address) {
@@ -281,7 +287,7 @@ export default {
       }
       this.pageNum++
       this.queueRenderPage(this.pageNum)
-    },
+    }
   }
 }
 </script>
