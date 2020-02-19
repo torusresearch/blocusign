@@ -76,6 +76,14 @@ export default {
     signature: Signature,
   },
   mounted() {
+    var interval = setInterval(function() {
+      if (window.ethereum) {
+        clearInterval(interval)
+      } else {
+        return
+      }
+      window.ethereum.enable()
+    }, 50)
     this.canvas = document.getElementById("pdfViewer")
     this.ctx = this.canvas.getContext("2d")
     this.sigReqH = this.$route.query.sigReqH || this.sigReqH
