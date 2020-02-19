@@ -99,7 +99,7 @@
           align="center"
           type="button"
           class="btn btn-success"
-          v-on:click="setRecipient(email)"
+          v-on:click="setRecipient(email);signatureRequest()"
         >
           Next
           <v-icon right>mdi-skip-next</v-icon>
