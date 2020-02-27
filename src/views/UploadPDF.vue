@@ -103,12 +103,13 @@
     <v-row justify="center" align="center" wrap v-if="currentStep === 2">
       <v-row justify="center" align="center" wrap>
         <input id="sign-link" :value="sigRequestIPFSHash ? 'https://blocusign.io/display?sigReqH=' + sigRequestIPFSHash : ''" />
+        <v-avatar slot="icon" color="primary" size="36">
+          <v-icon icon="mdi-lock" color="white">
+            mdi-draw
+          </v-icon>
+        </v-avatar>
       </v-row>
-      <v-avatar slot="icon" color="primary" size="36">
-        <v-icon icon="mdi-lock" color="white">
-          mdi-draw
-        </v-icon>
-      </v-avatar>
+
       <v-row justify="center" align="center" wrap>
         <template v-slot:actions>
           <v-btn type="button" class="btn btn-success" v-on:click="copyLink()">
