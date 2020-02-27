@@ -78,8 +78,8 @@
         <v-text-field
           align="center"
           v-on:keyup.enter="
-            setRecipient(email)
-            signatureRequest()
+            setRecipient(email);
+            signatureRequest();
           "
           v-model="email"
           placeholder="Enter recipient email e.g. hello@tor.us"
@@ -91,8 +91,8 @@
           type="button"
           class="btn btn-success"
           v-on:click="
-            setRecipient(email)
-            signatureRequest()
+            setRecipient(email);
+            signatureRequest();
           "
         >
           Next
@@ -107,13 +107,17 @@
             mdi-draw
           </v-icon>
         </v-avatar>
-        {{ 'https://blocusign.io/display?sigReqH=' + sigRequestIPFSHash }}
-        <input type="hidden" id="sign-link" :value="'https://blocusign.io/display?sigReqH=' + sigRequestIPFSHash" />
+        <input id="sign-link" :value="'https://blocusign.io/display?sigReqH=' + sigRequestIPFSHash" />
         <template v-slot:actions>
           <v-btn type="button" class="btn btn-success" v-on:click="copyLink()">
             <i class="fa fa-arrow-up" aria-hidden="true"></i>
             Copy
             <v-icon right>mdi-content-copy</v-icon>
+          </v-btn>
+          <v-btn type="button" class="btn btn-success" v-on:click="gotoSign()">
+            <i class="fa fa-arrow-up" aria-hidden="true"></i>
+            Sign
+            <v-icon right>mdi-pen</v-icon>
           </v-btn>
           <v-btn
             type="button"
@@ -153,18 +157,18 @@
 </template>
 
 <script>
-import pdfjsLib from 'pdfjs-dist'
-import FileUpload from 'vue-upload-component'
+import pdfjsLib from "pdfjs-dist";
+import FileUpload from "vue-upload-component";
 
 export default {
   data() {
     return {
-      email: '',
-      steps: ['Upload', 'Choose Recipient', 'Send', 'Sign', 'Verify'],
+      email: "",
+      steps: ["Upload", "Choose Recipient", "Send", "Sign", "Verify"],
       currentStep: 0,
       previousFileSize: 0,
-      responseIPFSHash: '',
-      sigRequestIPFSHash: '',
+      responseIPFSHash: "",
+      sigRequestIPFSHash: "",
       files: [],
       pdfDoc: null,
       pageNum: 1,
@@ -173,8 +177,8 @@ export default {
       scale: 1.0,
       canvas: null,
       ctx: null,
-      recipient: ''
-    }
+      recipient: ""
+    };
   },
   components: {
     FileUpload
@@ -182,94 +186,101 @@ export default {
   mounted() {
     var interval = setInterval(function() {
       if (window.web3) {
-        clearInterval(interval)
+        clearInterval(interval);
       } else {
-        return
+        return;
       }
       if (window.web3.eth.accounts.length === 0) {
-        window.ethereum.enable()
+        window.ethereum.enable();
       }
-    }, 50)
-    this.canvas = document.getElementById('pdfViewer')
-    this.ctx = this.canvas.getContext('2d')
+    }, 50);
+    this.canvas = document.getElementById("pdfViewer");
+    this.ctx = this.canvas.getContext("2d");
   },
   watch: {
     files: {
       handler(fileUploaderFiles) {
         if (fileUploaderFiles.length === 0) {
-          return
+          return;
         }
-        var fileUpload = fileUploaderFiles[0]
-        var file = fileUpload.file
-        this.responseIPFSHash = fileUpload.response
-        var self = this
-        if (typeof fileUpload.response === 'string') {
-          self.currentStep = self.steps.indexOf('Choose Recipient')
+        var fileUpload = fileUploaderFiles[0];
+        var file = fileUpload.file;
+        this.responseIPFSHash = fileUpload.response;
+        var self = this;
+        if (typeof fileUpload.response === "string") {
+          self.currentStep = self.steps.indexOf("Choose Recipient");
         }
-        var fileReader = new FileReader()
+        var fileReader = new FileReader();
         fileReader.onload = function() {
-          var typedarray = new Uint8Array(this.result)
+          var typedarray = new Uint8Array(this.result);
           pdfjsLib.getDocument(typedarray).then(pdf => {
-            self.updatePDF(pdf)
-            console.log('the pdf has ', pdf.numPages, 'page(s).')
+            self.updatePDF(pdf);
+            console.log("the pdf has ", pdf.numPages, "page(s).");
             // pdf.getData().then((data) => {
             //   console.log(data.length)
             //   // var hash = web3.sha3('0x'+Buffer.from(data).toString('hex'))
             //   // console.log('hash', hash)
             //   // web3.eth.sign(web3.eth.accounts[0], hash, console.log)
             // })
-            self.queueRenderPage(self.pageNum)
-          })
-        }
+            self.queueRenderPage(self.pageNum);
+          });
+        };
         if (this.previousFileSize === file.size) {
-          return
+          return;
         }
-        this.previousFileSize = file.size
-        fileReader.readAsArrayBuffer(file)
-        return
+        this.previousFileSize = file.size;
+        fileReader.readAsArrayBuffer(file);
+        return;
       },
       deep: true
     }
   },
   methods: {
     /**
+     * Go to signing page
+     */
+    gotoSign() {
+      let testingCodeToCopy = document.querySelector("#sign-link");
+      window.open(testingCodeToCopy.value);
+    },
+    /**
      * Update pdf to Viewer data
      */
     updatePDF(pdfDoc) {
-      this.pdfDoc = pdfDoc
+      this.pdfDoc = pdfDoc;
     },
     /**
      * Get page info from document, resize canvas accordingly, and render page.
      * @param num Page number.
      */
     renderPage(num) {
-      this.pageRendering = true
+      this.pageRendering = true;
       // Using promise to fetch the page
       this.pdfDoc.getPage(num).then(page => {
-        var viewport = page.getViewport({ scale: this.scale })
-        this.canvas.height = viewport.height
-        this.canvas.width = viewport.width
+        var viewport = page.getViewport({ scale: this.scale });
+        this.canvas.height = viewport.height;
+        this.canvas.width = viewport.width;
 
         // Render PDF page into canvas context
         var renderContext = {
           canvasContext: this.ctx,
           viewport: viewport
-        }
-        var renderTask = page.render(renderContext)
+        };
+        var renderTask = page.render(renderContext);
 
         // Wait for rendering to finish
         renderTask.promise.then(() => {
-          this.pageRendering = false
+          this.pageRendering = false;
           if (this.pageNumPending !== null) {
             // New page rendering is pending
-            this.renderPage(this.pageNumPending)
-            this.pageNumPending = null
+            this.renderPage(this.pageNumPending);
+            this.pageNumPending = null;
           }
-        })
-      })
+        });
+      });
 
       // Update page counters
-      document.getElementById('page-num').textContent = num
+      document.getElementById("page-num").textContent = num;
     },
     /**
      * If another page rendering in progress, waits until the rendering is
@@ -277,9 +288,9 @@ export default {
      */
     queueRenderPage(num) {
       if (this.pageRendering) {
-        this.pageNumPending = num
+        this.pageNumPending = num;
       } else {
-        this.renderPage(num)
+        this.renderPage(num);
       }
     },
     /**
@@ -287,80 +298,80 @@ export default {
      */
     prevPage() {
       if (this.pageNum <= 1) {
-        return
+        return;
       }
-      this.pageNum--
-      this.queueRenderPage(this.pageNum)
+      this.pageNum--;
+      this.queueRenderPage(this.pageNum);
     },
     /**
      * Displays next page.
      */
     nextPage() {
       if (this.pageNum >= this.pdfDoc.numPages) {
-        return
+        return;
       }
-      this.pageNum++
-      this.queueRenderPage(this.pageNum)
+      this.pageNum++;
+      this.queueRenderPage(this.pageNum);
     },
     /**
      * Signs and request based on the hash
      */
     signatureRequest: async function() {
-      console.log('this is ', this)
+      console.log("this is ", this);
       // validation checks
-      if (this.responseIPFSHash == '') {
-        console.log('error, cant sign and request, no responseIPFSHash')
-        return
+      if (this.responseIPFSHash == "") {
+        console.log("error, cant sign and request, no responseIPFSHash");
+        return;
       }
 
-      if (this.recipient == '') {
-        console.log('error, cant sign and request, no recipeient')
-        return
+      if (this.recipient == "") {
+        console.log("error, cant sign and request, no recipeient");
+        return;
       }
 
       // get sender details
-      var myHeaders = new Headers()
-      var senderInfo = await window.torus.getUserInfo()
-      myHeaders.append('Content-Type', 'application/json')
+      var myHeaders = new Headers();
+      var senderInfo = await window.torus.getUserInfo();
+      myHeaders.append("Content-Type", "application/json");
       var raw = JSON.stringify({
-        jsonrpc: '2.0',
-        method: 'VerifierLookupRequest',
+        jsonrpc: "2.0",
+        method: "VerifierLookupRequest",
         id: 10,
         params: {
           verifier: senderInfo.verifier,
           verifier_id: senderInfo.verifierId
         }
-      })
+      });
       var requestOptions = {
-        method: 'POST',
+        method: "POST",
         headers: myHeaders,
         body: raw,
-        redirect: 'follow'
-      }
-      var response = await fetch('https://torus-18.torusnode.com/jrpc', requestOptions)
-      var jsonText = await response.text()
-      var senderDetails = JSON.parse(jsonText)
+        redirect: "follow"
+      };
+      var response = await fetch("https://torus-18.torusnode.com/jrpc", requestOptions);
+      var jsonText = await response.text();
+      var senderDetails = JSON.parse(jsonText);
 
       // get recipient details
       await window.torus.getPublicAddress({
-        verifier: 'google',
+        verifier: "google",
         verifierId: this.recipient
-      })
+      });
       var raw2 = JSON.stringify({
-        jsonrpc: '2.0',
-        method: 'VerifierLookupRequest',
+        jsonrpc: "2.0",
+        method: "VerifierLookupRequest",
         id: 10,
-        params: { verifier: 'google', verifier_id: this.recipient }
-      })
+        params: { verifier: "google", verifier_id: this.recipient }
+      });
       var requestOptions2 = {
-        method: 'POST',
+        method: "POST",
         headers: myHeaders,
         body: raw2,
-        redirect: 'follow'
-      }
-      var response2 = await fetch('https://torus-18.torusnode.com/jrpc', requestOptions2)
-      var jsonText2 = await response2.text()
-      var recipientDetails = JSON.parse(jsonText2)
+        redirect: "follow"
+      };
+      var response2 = await fetch("https://torus-18.torusnode.com/jrpc", requestOptions2);
+      var jsonText2 = await response2.text();
+      var recipientDetails = JSON.parse(jsonText2);
       // create signing request object
       var signatureRequest = {
         timeRequested: Date.now(),
@@ -374,51 +385,49 @@ export default {
           {
             address: recipientDetails.result.keys[0].address,
             verifierId: this.recipient,
-            verifier: 'google'
+            verifier: "google"
           }
         ]
-      }
-      console.log(signatureRequest)
+      };
+      console.log(signatureRequest);
 
       //submit to ipfs here
-      var rawResponse = await fetch('https://blocusign.io/upload/signature-request', {
-        method: 'POST',
+      var rawResponse = await fetch("https://blocusign.io/upload/signature-request", {
+        method: "POST",
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
+          Accept: "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(signatureRequest)
-      })
-      var sigRequestHash = await rawResponse.text()
-      console.log(sigRequestHash)
-      this.sigRequestIPFSHash = sigRequestHash
+      });
+      var sigRequestHash = await rawResponse.text();
+      console.log(sigRequestHash);
+      this.sigRequestIPFSHash = sigRequestHash;
     },
     /**
      * Get receipient
      */
     setRecipient(val) {
-      this.recipient = val
-      this.currentStep = this.steps.indexOf('Send')
+      this.recipient = val;
+      this.currentStep = this.steps.indexOf("Send");
     },
     copyLink() {
-      let testingCodeToCopy = document.querySelector('#sign-link')
-      testingCodeToCopy.setAttribute('type', 'text')
-      testingCodeToCopy.select()
+      let testingCodeToCopy = document.querySelector("#sign-link");
+      testingCodeToCopy.select();
 
       try {
-        var successful = document.execCommand('copy')
-        var msg = successful ? 'successful' : 'unsuccessful'
-        console.log('link code was copied ' + msg)
+        var successful = document.execCommand("copy");
+        var msg = successful ? "successful" : "unsuccessful";
+        console.log("link code was copied " + msg);
       } catch (err) {
-        console.log('Oops, unable to copy')
+        console.log("Oops, unable to copy");
       }
 
       /* unselect the range */
-      testingCodeToCopy.setAttribute('type', 'hidden')
-      window.getSelection().removeAllRanges()
+      window.getSelection().removeAllRanges();
     }
   }
-}
+};
 </script>
 
 <style>

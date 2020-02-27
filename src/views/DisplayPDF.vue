@@ -120,7 +120,7 @@ export default {
     }
     if (this.sigsH.length > 0) {
       for (var i = 0; i < this.sigsH.length; i++) {
-        (function(i) {
+        ;(function(i) {
           fetch('https://ipfs.io/ipfs/' + self.sigsH[i])
             .then(resp => resp.json())
             .then(json => {
