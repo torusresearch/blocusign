@@ -101,46 +101,42 @@
       </v-col>
     </v-row>
     <v-row justify="center" align="center" wrap v-if="currentStep === 2">
-      <v-banner single-line>
-        <v-row justify="center" align="center" wrap>
-          <input id="sign-link" :value="sigRequestIPFSHash ? 'https://blocusign.io/display?sigReqH=' + sigRequestIPFSHash : ''" />
-        </v-row>
-      </v-banner>
-      <v-banner single-line>
-        <v-avatar slot="icon" color="primary" size="36">
-          <v-icon icon="mdi-lock" color="white">
-            mdi-draw
-          </v-icon>
-        </v-avatar>
-        <v-row justify="center" align="center" wrap>
-          <template v-slot:actions>
-            <v-btn type="button" class="btn btn-success" v-on:click="copyLink()">
-              <i class="fa fa-arrow-up" aria-hidden="true"></i>
-              Copy
-              <v-icon right>mdi-content-copy</v-icon>
-            </v-btn>
-            <v-btn type="button" class="btn btn-success" v-on:click="gotoSign()">
-              <i class="fa fa-arrow-up" aria-hidden="true"></i>
-              Sign
-              <v-icon right>mdi-pen</v-icon>
-            </v-btn>
-            <v-btn
-              type="button"
-              class="btn btn-success"
-              v-bind:href="
-                'mailto:' +
-                  recipient +
-                  '?subject=Signature%20requested&body=Please%20head%20over%20to%20https://blocusign.io/display?sigReqH=' +
-                  sigRequestIPFSHash
-              "
-            >
-              <i class="fa fa-arrow-up" aria-hidden="true"></i>
-              Email
-              <v-icon right>mdi-email-outline</v-icon>
-            </v-btn>
-          </template>
-        </v-row>
-      </v-banner>
+      <v-row justify="center" align="center" wrap>
+        <input id="sign-link" :value="sigRequestIPFSHash ? 'https://blocusign.io/display?sigReqH=' + sigRequestIPFSHash : ''" />
+      </v-row>
+      <v-avatar slot="icon" color="primary" size="36">
+        <v-icon icon="mdi-lock" color="white">
+          mdi-draw
+        </v-icon>
+      </v-avatar>
+      <v-row justify="center" align="center" wrap>
+        <template v-slot:actions>
+          <v-btn type="button" class="btn btn-success" v-on:click="copyLink()">
+            <i class="fa fa-arrow-up" aria-hidden="true"></i>
+            Copy
+            <v-icon right>mdi-content-copy</v-icon>
+          </v-btn>
+          <v-btn type="button" class="btn btn-success" v-on:click="gotoSign()">
+            <i class="fa fa-arrow-up" aria-hidden="true"></i>
+            Sign
+            <v-icon right>mdi-pen</v-icon>
+          </v-btn>
+          <v-btn
+            type="button"
+            class="btn btn-success"
+            v-bind:href="
+              'mailto:' +
+                recipient +
+                '?subject=Signature%20requested&body=Please%20head%20over%20to%20https://blocusign.io/display?sigReqH=' +
+                sigRequestIPFSHash
+            "
+          >
+            <i class="fa fa-arrow-up" aria-hidden="true"></i>
+            Email
+            <v-icon right>mdi-email-outline</v-icon>
+          </v-btn>
+        </template>
+      </v-row>
     </v-row>
     <v-row justify="center" align="center" v-if="currentStep === 0">
       <v-col align="center" cols="10">
