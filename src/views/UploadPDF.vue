@@ -76,6 +76,7 @@
     <v-row justify="center" align="center" wrap v-if="currentStep === 1">
       <v-col cols="4" align="center">
         <v-text-field
+          id="recipient-email"
           align="center"
           v-on:keyup.enter="
             setRecipient(email)
@@ -435,6 +436,9 @@ export default {
 </script>
 
 <style>
+#recipient-email {
+  min-width: 250px;
+}
 #sign-link {
   font-size: 12px;
   min-width: 250px;
