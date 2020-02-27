@@ -20,7 +20,7 @@
     </v-stepper>
     <v-row justify="center" class="upload">
       <template v-if="files.length">
-        <v-col cols="12" v-for="file in files" :key="file.id" align="center">
+        <v-col id="file-name" cols="12" v-for="file in files" :key="file.id" align="center">
           <span>{{ file.name }}</span>
           <span v-if="responseIPFSHash.length > 3">- {{ responseIPFSHash }} -</span>
           <span v-if="file.error">{{ file.error }}</span>
@@ -102,14 +102,16 @@
     </v-row>
     <v-row justify="center" align="center" wrap v-if="currentStep === 2">
       <v-banner single-line>
+        <v-row justify="center" align="center" wrap>
+          <input id="sign-link" :value="sigRequestIPFSHash ? 'https://blocusign.io/display?sigReqH=' + sigRequestIPFSHash : ''" />
+        </v-row>
+      </v-banner>
+      <v-banner single-line>
         <v-avatar slot="icon" color="primary" size="36">
           <v-icon icon="mdi-lock" color="white">
             mdi-draw
           </v-icon>
         </v-avatar>
-        <v-row justify="center" align="center" wrap>
-          <input id="sign-link" :value="'https://blocusign.io/display?sigReqH=' + sigRequestIPFSHash" />
-        </v-row>
         <v-row justify="center" align="center" wrap>
           <template v-slot:actions>
             <v-btn type="button" class="btn btn-success" v-on:click="copyLink()">
@@ -435,6 +437,9 @@ export default {
 </script>
 
 <style>
+#file-name {
+  word-break: break-word;
+}
 #pdfViewer {
   width: 100%;
   height: 100%;
