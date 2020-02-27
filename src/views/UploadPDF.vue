@@ -104,13 +104,13 @@
     <v-row justify="center" align="center" wrap v-if="currentStep === 2">
       <v-col cols="12" justify="center" align="center" wrap>
         <v-row justify="center" align="center" wrap>
-          <v-col cols="10" md="6" justify="center" align="center" wrap>
+          <v-col cols="10" md="7" justify="center" align="center" wrap>
             <input
               id="sign-link"
               :value="sigRequestIPFSHash ? 'https://blocusign.io/display?sigReqH=' + sigRequestIPFSHash : '... generating link ...'"
             />
           </v-col>
-          <v-col cols="2" md="2" justify="center" align="center" wrap>
+          <v-col cols="2" md="1" justify="center" align="center" wrap>
             <v-avatar slot="icon" color="primary" size="36">
               <v-icon icon="mdi-lock" color="white">
                 mdi-draw
@@ -446,9 +446,8 @@ export default {
   min-width: 250px;
 }
 #sign-link {
-  font-size: 12px;
   min-width: 250px;
-  padding-right: 5px;
+  width: inherit;
 }
 #file-name {
   word-break: break-word;
