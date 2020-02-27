@@ -101,16 +101,16 @@
       </v-col>
     </v-row>
     <v-row justify="center" align="center" wrap v-if="currentStep === 2">
-      <v-row justify="center" align="center" wrap>
+      <v-col cols="12" justify="center" align="center" wrap>
         <input id="sign-link" :value="sigRequestIPFSHash ? 'https://blocusign.io/display?sigReqH=' + sigRequestIPFSHash : ''" />
         <v-avatar slot="icon" color="primary" size="36">
           <v-icon icon="mdi-lock" color="white">
             mdi-draw
           </v-icon>
         </v-avatar>
-      </v-row>
+      </v-col>
 
-      <v-row justify="center" align="center" wrap>
+      <v-col cols="12" justify="center" align="center" wrap>
         <v-btn type="button" class="btn btn-success" v-on:click="copyLink()">
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
           Copy
@@ -135,7 +135,7 @@
           Email
           <v-icon right>mdi-email-outline</v-icon>
         </v-btn>
-      </v-row>
+      </v-col>
     </v-row>
     <v-row justify="center" align="center" v-if="currentStep === 0">
       <v-col align="center" cols="10">
