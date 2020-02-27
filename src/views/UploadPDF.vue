@@ -432,6 +432,11 @@ export default {
 </script>
 
 <style>
+#sign-link {
+  font-size: 12px;
+  min-width: 250px;
+  padding-right: 5px;
+}
 #file-name {
   word-break: break-word;
 }
