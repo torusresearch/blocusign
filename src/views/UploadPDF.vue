@@ -104,7 +104,7 @@
     <v-row justify="center" align="center" wrap v-if="currentStep === 2">
       <v-col cols="12" justify="center" align="center" wrap>
         <v-row justify="center" align="center" wrap>
-          <v-col cols="10" md="7" justify="center" align="center" wrap>
+          <v-col cols="10" md="5" justify="center" align="center" wrap>
             <input
               id="sign-link"
               :value="sigRequestIPFSHash ? 'https://blocusign.io/display?sigReqH=' + sigRequestIPFSHash : '... generating link ...'"
@@ -446,6 +446,7 @@ export default {
   min-width: 250px;
 }
 #sign-link {
+  text-align: center;
   min-width: 250px;
   width: inherit;
 }
