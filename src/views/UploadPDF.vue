@@ -74,7 +74,7 @@
       </v-col>
     </v-row>
     <v-row justify="center" align="center" wrap v-if="currentStep === 1">
-      <v-col cols="4" align="center">
+      <v-col cols="7" align="right">
         <v-text-field
           id="recipient-email"
           align="center"
@@ -86,7 +86,7 @@
           placeholder="Enter recipient email e.g. hello@tor.us"
         />
       </v-col>
-      <v-col cols="2" align="center">
+      <v-col cols="5" align="left">
         <v-btn
           align="center"
           type="button"
