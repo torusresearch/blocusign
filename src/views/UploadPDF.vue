@@ -102,7 +102,10 @@
     </v-row>
     <v-row justify="center" align="center" wrap v-if="currentStep === 2">
       <v-col cols="12" justify="center" align="center" wrap>
-        <input id="sign-link" :value="sigRequestIPFSHash ? 'https://blocusign.io/display?sigReqH=' + sigRequestIPFSHash : ''" />
+        <input
+          id="sign-link"
+          :value="sigRequestIPFSHash ? 'https://blocusign.io/display?sigReqH=' + sigRequestIPFSHash : '... generating link ...'"
+        />
         <v-avatar slot="icon" color="primary" size="36">
           <v-icon icon="mdi-lock" color="white">
             mdi-draw
