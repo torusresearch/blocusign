@@ -111,32 +111,30 @@
       </v-row>
 
       <v-row justify="center" align="center" wrap>
-        <template v-slot:actions>
-          <v-btn type="button" class="btn btn-success" v-on:click="copyLink()">
-            <i class="fa fa-arrow-up" aria-hidden="true"></i>
-            Copy
-            <v-icon right>mdi-content-copy</v-icon>
-          </v-btn>
-          <v-btn type="button" class="btn btn-success" v-on:click="gotoSign()">
-            <i class="fa fa-arrow-up" aria-hidden="true"></i>
-            Sign
-            <v-icon right>mdi-pen</v-icon>
-          </v-btn>
-          <v-btn
-            type="button"
-            class="btn btn-success"
-            v-bind:href="
-              'mailto:' +
-                recipient +
-                '?subject=Signature%20requested&body=Please%20head%20over%20to%20https://blocusign.io/display?sigReqH=' +
-                sigRequestIPFSHash
-            "
-          >
-            <i class="fa fa-arrow-up" aria-hidden="true"></i>
-            Email
-            <v-icon right>mdi-email-outline</v-icon>
-          </v-btn>
-        </template>
+        <v-btn type="button" class="btn btn-success" v-on:click="copyLink()">
+          <i class="fa fa-arrow-up" aria-hidden="true"></i>
+          Copy
+          <v-icon right>mdi-content-copy</v-icon>
+        </v-btn>
+        <v-btn type="button" class="btn btn-success" v-on:click="gotoSign()">
+          <i class="fa fa-arrow-up" aria-hidden="true"></i>
+          Sign
+          <v-icon right>mdi-pen</v-icon>
+        </v-btn>
+        <v-btn
+          type="button"
+          class="btn btn-success"
+          v-bind:href="
+            'mailto:' +
+              recipient +
+              '?subject=Signature%20requested&body=Please%20head%20over%20to%20https://blocusign.io/display?sigReqH=' +
+              sigRequestIPFSHash
+          "
+        >
+          <i class="fa fa-arrow-up" aria-hidden="true"></i>
+          Email
+          <v-icon right>mdi-email-outline</v-icon>
+        </v-btn>
       </v-row>
     </v-row>
     <v-row justify="center" align="center" v-if="currentStep === 0">
