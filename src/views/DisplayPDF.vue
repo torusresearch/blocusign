@@ -34,7 +34,7 @@
           <v-btn type="button" class="btn btn-success" v-on:click="signPDF()">
             <i class="fa fa-arrow-up" aria-hidden="true"></i>
             Sign
-            <v-icon right>mdi-content-copy</v-icon>
+            <v-icon right>mdi-pen</v-icon>
           </v-btn>
         </template>
       </v-banner>

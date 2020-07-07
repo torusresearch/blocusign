@@ -32,7 +32,7 @@
       <template v-else>
         <v-col cols="12" align="center">
           <v-icon x-large>mdi-file</v-icon>
-          <h4>Drop file to be signed anywhere, or...</h4>
+          <h4>Upload PDF:</h4>
         </v-col>
       </template>
     </v-row>
