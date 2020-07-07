@@ -4,6 +4,9 @@ services:
   ipfs:
     image: ipfs/go-ipfs
     command: daemon --writable
+    ports:
+      - "4001:4001"
+      - "8080:8080"
   torus-backend:
     restart: always
     build:
