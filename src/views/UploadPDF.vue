@@ -107,7 +107,7 @@
           <v-col cols="10" md="5" justify="center" align="center" wrap>
             <input
               id="sign-link"
-              :value="sigRequestIPFSHash ? 'https://blocusign.io/display?sigReqH=' + sigRequestIPFSHash : '... generating link ...'"
+              :value="sigRequestIPFSHash ? $window.location.origin + '/display?sigReqH=' + sigRequestIPFSHash : '... generating link ...'"
             />
           </v-col>
           <v-col cols="2" md="1" justify="center" align="center" wrap>
@@ -137,7 +137,7 @@
           v-bind:href="
             'mailto:' +
               recipient +
-              '?subject=Signature%20requested&body=Please%20head%20over%20to%20https://blocusign.io/display?sigReqH=' +
+              `?subject=Signature%20requested&body=Please%20head%20over%20to%${$window.location.origin}/display?sigReqH=` +
               sigRequestIPFSHash
           "
         >
@@ -202,7 +202,7 @@ export default {
         return
       }
       if (window.web3.eth.accounts.length === 0) {
-        window.ethereum.enable()
+        window.torus.ethereum.enable()
       }
     }, 50)
     this.canvas = document.getElementById('pdfViewer')
@@ -403,7 +403,7 @@ export default {
       console.log(signatureRequest)
 
       //submit to ipfs here
-      var rawResponse = await fetch('https://blocusign.io/upload/signature-request', {
+      var rawResponse = await fetch('/upload/signature-request', {
         method: 'POST',
         headers: {
           Accept: 'application/json',

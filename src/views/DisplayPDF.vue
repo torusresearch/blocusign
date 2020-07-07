@@ -96,7 +96,7 @@ export default {
         return
       }
       if (window.web3.eth.accounts.length === 0) {
-        window.ethereum.enable()
+        window.torus.ethereum.enable()
       }
     }, 50)
     this.canvas = document.getElementById('pdfViewer')
@@ -165,7 +165,7 @@ export default {
       var signatureStore = signedMessage
       signatureStore.signature = signature
 
-      var sigStoreResp = await fetch('https://blocusign.io/upload/signature', {
+      var sigStoreResp = await fetch('/upload/signature', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
