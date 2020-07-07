@@ -105,7 +105,7 @@ export default {
     window.disp = this
     if (this.sigReqH !== '') {
       var self = this
-      fetch('https://ipfs.io/ipfs/' + this.sigReqH)
+      fetch('https://ipfs.blocusign.io/ipfs/' + this.sigReqH)
         .then(resp => resp.json())
         .then(json => {
           self.sigReq = json
@@ -121,7 +121,7 @@ export default {
     if (this.sigsH.length > 0) {
       for (var i = 0; i < this.sigsH.length; i++) {
         ;(function(i) {
-          fetch('https://ipfs.io/ipfs/' + self.sigsH[i])
+          fetch('https://ipfs.blocusign.io/ipfs/' + self.sigsH[i])
             .then(resp => resp.json())
             .then(json => {
               self.sigs[i] = json
@@ -134,7 +134,7 @@ export default {
     pdfH: {
       handler(pdfH) {
         var self = this
-        fetch('https://ipfs.io/ipfs/' + pdfH)
+        fetch('https://ipfs.blocusign.io/ipfs/' + pdfH)
           .then(resp => resp.blob())
           .then(blob => {
             self.pdfURL = URL.createObjectURL(blob)
